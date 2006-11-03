@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-$debug = false # Server complains without this set.
+$debug = true # Server complains without this set.
 
 MYNAME = File.basename(__FILE__)
 
@@ -37,10 +37,14 @@ class ActiveRecordOperation < LDAP::Server::Operation
   
   def search(basedn, scope, deref, filter)
     @logger.info "Received search request."
+    @logger.debug "Filter: #{filter.inspect}"
     # This is needed to force the ruby ldap server to return our parameters, 
     # even though the client didn't explicitly ask for them
     @attributes << "*"
-    raise LDAP::ResultError::UnwillingToPerform, "Bad base DN" unless basedn == @config[:basedn]
+    if basedn != @config[:basedn]
+      @logger.info "Denying request with missmatched basedn (requested #{@config[:basedn]})"
+      raise LDAP::ResultError::UnwillingToPerform, "Bad base DN" unless basedn == @config[:basedn]
+    end
 
     if scope == LDAP::Server::BaseObject
         @logger.info "Denying request for BaseObject"
@@ -69,19 +73,26 @@ class ActiveRecordOperation < LDAP::Server::Operation
       raise LDAP::ResultError::UnwillingToPerform, "Seriously, I can only handle simple queries: #{filter.inspect}"
     end
 
-
-    records = @ar_class.search(query_string)
-    @logger.info "Returning #{records.size} records matching \"#{query_string}\"."
-    records.each do |record|
-      ret = record.to_ldap_entry
-      ret_basedn = "uid=#{ret["uid"]},#{@config[:basedn]}"
-      @logger.debug "Sending #{ret_basedn} - #{ret.inspect}" 
-      send_SearchResultEntry(ret_basedn, ret)
-    end        
+    @logger.debug "Running #{@ar_class.name}.search(#{query_string})"
+    begin
+      @records = @ar_class.search(query_string)
+    rescue
+      @logger.error "ERROR running #{@ar_class.name}.search(#{query_string}): #{$!}"
+      raise LDAP::ResultError::OperationsError, "Error encountered during processing."
+    end 
+    begin
+      @logger.info "Returning #{@records.size} records matching \"#{query_string}\"."
+      @records.each do |record|
+        ret = record.to_ldap_entry
+        ret_basedn = "uid=#{ret["uid"]},#{@config[:basedn]}"
+        @logger.debug "Sending #{ret_basedn} - #{ret.inspect}" 
+        send_SearchResultEntry(ret_basedn, ret)
+      end
+    rescue
+      @logger.error "ERROR converting AR instance to ldap entry: #{$!}"
+      raise LDAP::ResultError::OperationsError, "Error encountered during processing."
+    end      
   end
-  
-  private
-
 end
 
 class Pidfile
@@ -113,7 +124,7 @@ end
 
 @pidfile = Pidfile.new("#{BASEDIR}/var/ldap-server.pid")
 @logger = Logger.new("#{BASEDIR}/log/ldap-server.log")
-@logger.level = Logger::INFO unless $debug
+@logger.level = $debug ? Logger::DEBUG : Logger::INFO 
 @logger.datetime_format = "%H:%M:%S"
 
 def start
