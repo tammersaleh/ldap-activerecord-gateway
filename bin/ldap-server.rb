@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-$debug = true # Server complains without this set.
+$debug = false # Server complains without this set.
 
 MYNAME = File.basename(__FILE__)
 
