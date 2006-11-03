@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>test_parse_objectclass (SchemaTest)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-schema.rb, line 46</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_parse_objectclass</span>
+<span class="ruby-identifier">oc</span> = <span class="ruby-value str">&quot;( 0.9.2342.19200300.100.4.19 NAME 'simpleSecurityObject' DESC 'RFC1274: simple security object' SUP top AUXILIARY MUST userPassword )\n&quot;</span>
+    <span class="ruby-identifier">a</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Schema</span><span class="ruby-operator">::</span><span class="ruby-constant">ObjectClass</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">oc</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;0.9.2342.19200300.100.4.19&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">oid</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;simpleSecurityObject&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">name</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-value str">&quot;simpleSecurityObject&quot;</span>], <span class="ruby-identifier">a</span>.<span class="ruby-identifier">names</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-operator">!</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">obsolete</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;RFC1274: simple security object&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">desc</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-value str">&quot;top&quot;</span>], <span class="ruby-identifier">a</span>.<span class="ruby-identifier">sup</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-identifier">:auxiliary</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">struct</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-value str">&quot;userPassword&quot;</span>], <span class="ruby-identifier">a</span>.<span class="ruby-identifier">must</span>)
+    <span class="ruby-identifier">assert_equal</span>([], <span class="ruby-identifier">a</span>.<span class="ruby-identifier">may</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-identifier">oc</span>.<span class="ruby-identifier">chomp</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">to_def</span>)
+
+<span class="ruby-identifier">oc</span> = <span class="ruby-value str">&quot;( 2.5.6.6 NAME 'person' DESC 'RFC2256: a person' SUP top STRUCTURAL MUST ( sn $ cn ) MAY ( userPassword $ telephoneNumber $ seeAlso $ description ) )\n&quot;</span>
+    <span class="ruby-identifier">a</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Schema</span><span class="ruby-operator">::</span><span class="ruby-constant">ObjectClass</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">oc</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;2.5.6.6&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">oid</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;person&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">name</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-value str">&quot;person&quot;</span>], <span class="ruby-identifier">a</span>.<span class="ruby-identifier">names</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-operator">!</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">obsolete</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;RFC2256: a person&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">desc</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-value str">&quot;top&quot;</span>], <span class="ruby-identifier">a</span>.<span class="ruby-identifier">sup</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-identifier">:structural</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">struct</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-value str">&quot;sn&quot;</span>, <span class="ruby-value str">&quot;cn&quot;</span>], <span class="ruby-identifier">a</span>.<span class="ruby-identifier">must</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-value str">&quot;userPassword&quot;</span>,<span class="ruby-value str">&quot;telephoneNumber&quot;</span>,<span class="ruby-value str">&quot;seeAlso&quot;</span>,<span class="ruby-value str">&quot;description&quot;</span>], <span class="ruby-identifier">a</span>.<span class="ruby-identifier">may</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-identifier">oc</span>.<span class="ruby-identifier">chomp</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">to_def</span>)
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>test_not (FilterTest)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-filter.rb, line 46</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_not</span>
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-keyword kw">false</span>, <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Filter</span>.<span class="ruby-identifier">run</span>([<span class="ruby-identifier">:not</span>,[<span class="ruby-identifier">:eq</span>,<span class="ruby-value str">&quot;foo&quot;</span>,<span class="ruby-keyword kw">nil</span>,<span class="ruby-value str">&quot;abc&quot;</span>]], <span class="ruby-constant">AV1</span>))
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-keyword kw">false</span>, <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Filter</span>.<span class="ruby-identifier">run</span>([<span class="ruby-identifier">:not</span>,[<span class="ruby-identifier">:eq</span>,<span class="ruby-value str">&quot;foo&quot;</span>,<span class="ruby-keyword kw">nil</span>,<span class="ruby-value str">&quot;def&quot;</span>]], <span class="ruby-constant">AV1</span>))
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-keyword kw">true</span>, <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Filter</span>.<span class="ruby-identifier">run</span>([<span class="ruby-identifier">:not</span>,[<span class="ruby-identifier">:eq</span>,<span class="ruby-value str">&quot;foo&quot;</span>,<span class="ruby-keyword kw">nil</span>,<span class="ruby-value str">&quot;ghi&quot;</span>]], <span class="ruby-constant">AV1</span>))
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-keyword kw">true</span>, <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Filter</span>.<span class="ruby-identifier">run</span>([<span class="ruby-identifier">:not</span>,[<span class="ruby-identifier">:eq</span>,<span class="ruby-value str">&quot;xyz&quot;</span>,<span class="ruby-keyword kw">nil</span>,<span class="ruby-value str">&quot;abc&quot;</span>]], <span class="ruby-constant">AV1</span>))
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

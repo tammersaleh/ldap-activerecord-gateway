@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>validate (LDAP::Server::Schema)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/schema.rb, line 273</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">validate</span>(<span class="ruby-identifier">mods</span>, <span class="ruby-identifier">entry</span>={})
+
+      <span class="ruby-comment cmt"># Run through the mods, make the normalized names, and perform any</span>
+      <span class="ruby-comment cmt"># updates</span>
+
+      <span class="ruby-comment cmt"># FIXME: I don't know if these are the right results to return</span>
+      <span class="ruby-comment cmt"># for the various types of validation errors</span>
+
+      <span class="ruby-identifier">oc_changed</span> = <span class="ruby-keyword kw">false</span>
+      <span class="ruby-identifier">res</span> = <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">dup</span>
+      <span class="ruby-identifier">mods</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attrname</span>, <span class="ruby-identifier">nv</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">attr</span> = <span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">attrname</span>)
+        <span class="ruby-identifier">attrname</span> = <span class="ruby-identifier">attr</span>.<span class="ruby-identifier">to_s</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ConstraintViolation</span>,
+          <span class="ruby-node">&quot;Cannot modify #{attrname}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attr</span>.<span class="ruby-identifier">nousermod</span> <span class="ruby-keyword kw">or</span>
+                                     (<span class="ruby-identifier">block_given?</span> <span class="ruby-keyword kw">and</span> <span class="ruby-operator">!</span><span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">attr</span>))
+        <span class="ruby-comment cmt"># Perform the update</span>
+        <span class="ruby-identifier">vals</span> = <span class="ruby-identifier">res</span>[<span class="ruby-identifier">attrname</span>] <span class="ruby-operator">||</span> []
+        <span class="ruby-identifier">checkvals</span> = []
+        <span class="ruby-identifier">nv</span> = [<span class="ruby-identifier">nv</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">nv</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>)
+
+        <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">nv</span>.<span class="ruby-identifier">first</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:add</span>
+          <span class="ruby-identifier">checkvals</span> = <span class="ruby-identifier">nv</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+          <span class="ruby-identifier">vals</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">checkvals</span>
+          <span class="ruby-identifier">vals</span>.<span class="ruby-identifier">uniq!</span>   <span class="ruby-comment cmt"># FIXME: ?? error if duplicate values</span>
+          <span class="ruby-comment cmt"># FIXME: normalize values? e.g. c: gb and c: GB are same value.</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:delete</span>
+          <span class="ruby-identifier">nv</span> = <span class="ruby-identifier">nv</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">nv</span>.<span class="ruby-identifier">empty?</span>
+            <span class="ruby-identifier">vals</span> = [] <span class="ruby-comment cmt"># ?? error if does not exist</span>
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-identifier">nv</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">vals</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">v</span>) } <span class="ruby-comment cmt"># ?? error if value missing</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:replace</span>
+          <span class="ruby-identifier">vals</span> = <span class="ruby-identifier">checkvals</span> = <span class="ruby-identifier">nv</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">vals</span> = <span class="ruby-identifier">checkvals</span> = <span class="ruby-identifier">nv</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">vals</span> <span class="ruby-operator">==</span> []
+          <span class="ruby-identifier">res</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">attrname</span>)
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">res</span>[<span class="ruby-identifier">attrname</span>] = <span class="ruby-identifier">vals</span>
+        <span class="ruby-keyword kw">end</span>
+
+        <span class="ruby-comment cmt"># Attribute validation</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ObjectClassViolation</span>,
+          <span class="ruby-node">&quot;Attribute #{attr} is SINGLE-VALUE&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attr</span>.<span class="ruby-identifier">singlevalue</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">vals</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>
+
+        <span class="ruby-identifier">checkvals</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">val</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">InvalidAttributeSyntax</span>,
+            <span class="ruby-node">&quot;Nil or empty value for attribute #{attr}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">empty?</span>
+          <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">InvalidAttributeSyntax</span>,
+            <span class="ruby-node">&quot;Bad value for #{attr}: #{val.inspect}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attr</span>.<span class="ruby-identifier">syntax</span> <span class="ruby-keyword kw">and</span> <span class="ruby-operator">!</span> <span class="ruby-identifier">attr</span>.<span class="ruby-identifier">syntax</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">val</span>)
+          <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">InvalidAttributeSyntax</span>,
+            <span class="ruby-node">&quot;Value too long for #{attr} (max #{attr.maxlen})&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attr</span>.<span class="ruby-identifier">maxlen</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">attr</span>.<span class="ruby-identifier">maxlen</span>
+        <span class="ruby-keyword kw">end</span>
+
+        <span class="ruby-identifier">oc_changed</span> = <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attrname</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'objectClass'</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-comment cmt"># Now do objectClass checks</span>
+      <span class="ruby-identifier">oc</span> = <span class="ruby-identifier">res</span>[<span class="ruby-value str">'objectClass'</span>]
+      <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">oc</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ObjectClassViolation</span>,
+          <span class="ruby-value str">&quot;objectClass attribute missing&quot;</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-identifier">oc</span> = <span class="ruby-identifier">oc</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">val</span><span class="ruby-operator">|</span> <span class="ruby-identifier">find_objectclass</span>(<span class="ruby-identifier">val</span>) }
+
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">oc_changed</span>
+        <span class="ruby-comment cmt"># Add superior objectClasses (note: growing an array while you</span>
+        <span class="ruby-comment cmt"># iterate over it seems to work, in ruby-1.8.2 anyway!)</span>
+        <span class="ruby-identifier">oc</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">objectclass</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">objectclass</span>.<span class="ruby-identifier">sup</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span>
+            <span class="ruby-identifier">oc</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">s</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">oc</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">s</span>)
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">res</span>[<span class="ruby-value str">'objectClass'</span>] = <span class="ruby-identifier">oc</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">oo</span><span class="ruby-operator">|</span> <span class="ruby-identifier">oo</span>.<span class="ruby-identifier">to_s</span> }
+
+        <span class="ruby-comment cmt"># Check that exactly one structural objectClass is present</span>
+        <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">oc</span>.<span class="ruby-identifier">find_all</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">struct</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:structural</span> }.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-value">1</span>
+          <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ObjectClassViolation</span>,
+            <span class="ruby-value str">&quot;Entry must have at least one structural objectClass&quot;</span>
+            <span class="ruby-comment cmt"># Exactly one? But you have to sort out the inheritance problem</span>
+            <span class="ruby-comment cmt"># (e.g. both person and organizationalPerson are declared</span>
+            <span class="ruby-comment cmt"># structural)</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-comment cmt"># Ensure that all MUST attributes are present</span>
+      <span class="ruby-identifier">allow_attr</span> = {}
+      <span class="ruby-identifier">oc</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">objectclass</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">objectclass</span>.<span class="ruby-identifier">must</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">m</span><span class="ruby-operator">|</span>
+          <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">res</span>[<span class="ruby-identifier">m</span>.<span class="ruby-identifier">name</span>] <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">res</span>[<span class="ruby-identifier">m</span>.<span class="ruby-identifier">name</span>] <span class="ruby-operator">!=</span> []
+            <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ObjectClassViolation</span>, <span class="ruby-node">&quot;Missing attribute #{m} required by objectClass #{objectclass}&quot;</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">allow_attr</span>[<span class="ruby-identifier">m</span>.<span class="ruby-identifier">name</span>] = <span class="ruby-keyword kw">true</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">objectclass</span>.<span class="ruby-identifier">may</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">m</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">allow_attr</span>[<span class="ruby-identifier">m</span>.<span class="ruby-identifier">name</span>] = <span class="ruby-keyword kw">true</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">oc</span>.<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">objectclass</span><span class="ruby-operator">|</span> <span class="ruby-identifier">objectclass</span>.<span class="ruby-identifier">name</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'extensibleObject'</span> }
+        <span class="ruby-comment cmt"># Now check all the attributes given are permitted by MUST or MAY</span>
+        <span class="ruby-identifier">res</span>.<span class="ruby-identifier">each_key</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attr</span><span class="ruby-operator">|</span>
+          <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">allow_attr</span>[<span class="ruby-identifier">attr</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">attr</span>).<span class="ruby-identifier">usage</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:directoryOperation</span>
+            <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ObjectClassViolation</span>, <span class="ruby-node">&quot;Attribute #{attr} not permitted by objectClass&quot;</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">res</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>test_parse_attr (SchemaTest)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-schema.rb, line 8</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_parse_attr</span>
+<span class="ruby-identifier">attr</span> = <span class="ruby-value str">&quot;( 2.5.4.3 NAME 'cn' OBSOLETE EQUALITY 1.2.3 ORDERING 4.5.678 SUBSTR 9.1.1 SYNTAX 4.3.2{58} SINGLE-VALUE COLLECTIVE NO-USER-MODIFICATION USAGE userApplications )\n&quot;</span>
+    <span class="ruby-identifier">a</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Schema</span><span class="ruby-operator">::</span><span class="ruby-constant">AttributeType</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">attr</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;2.5.4.3&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">oid</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;cn&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">name</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-value str">&quot;cn&quot;</span>], <span class="ruby-identifier">a</span>.<span class="ruby-identifier">names</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">a</span>.<span class="ruby-identifier">obsolete</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;1.2.3&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">equality</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;4.5.678&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">ordering</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;9.1.1&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">substr</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;4.3.2&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">syntax</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value">58</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">maxlen</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">a</span>.<span class="ruby-identifier">singlevalue</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">a</span>.<span class="ruby-identifier">collective</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">a</span>.<span class="ruby-identifier">nousermod</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-identifier">:userApplications</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">usage</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-identifier">attr</span>.<span class="ruby-identifier">chomp</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">to_def</span>)
+
+<span class="ruby-identifier">attr</span> = <span class="ruby-value str">&quot;( 2.5.4.3 NAME ( 'cn' 'commonName' ) DESC 'RFC2256: common name(s) for which the entity is known by' SUP name )\n&quot;</span>
+    <span class="ruby-identifier">a</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Schema</span><span class="ruby-operator">::</span><span class="ruby-constant">AttributeType</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">attr</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;2.5.4.3&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">oid</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;cn&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">name</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-value str">&quot;cn&quot;</span>, <span class="ruby-value str">&quot;commonName&quot;</span>], <span class="ruby-identifier">a</span>.<span class="ruby-identifier">names</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;RFC2256: common name(s) for which the entity is known by&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">desc</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-operator">!</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">obsolete</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;name&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">sup</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-operator">!</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">singlevalue</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-operator">!</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">collective</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-operator">!</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">nousermod</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-identifier">attr</span>.<span class="ruby-identifier">chomp</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">to_def</span>)
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

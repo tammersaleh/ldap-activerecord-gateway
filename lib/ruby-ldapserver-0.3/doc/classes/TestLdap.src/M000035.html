@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>setup (TestLdap)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-encoding.rb, line 69</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">setup</span>
+    <span class="ruby-ivar">@ppid</span> = <span class="ruby-identifier">$$</span>
+    <span class="ruby-ivar">@io</span> = <span class="ruby-constant">IO</span>.<span class="ruby-identifier">popen</span>(<span class="ruby-value str">&quot;-&quot;</span>,<span class="ruby-value str">&quot;w+&quot;</span>) <span class="ruby-comment cmt"># this is a fork()</span>
+    <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@io</span>
+      <span class="ruby-identifier">do_child</span>
+      <span class="ruby-identifier">exit!</span>
+    <span class="ruby-keyword kw">end</span>
+
+    <span class="ruby-comment cmt"># back to a single process (the parent). Now we start our</span>
+    <span class="ruby-comment cmt"># listener thread</span>
+    <span class="ruby-ivar">@serv</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span>.<span class="ruby-identifier">new</span>(
+        <span class="ruby-identifier">:bindaddr</span>              =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;127.0.0.1&quot;</span>,
+        <span class="ruby-identifier">:port</span>                  =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1389</span>,
+        <span class="ruby-identifier">:nodelay</span>               =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>,
+        <span class="ruby-identifier">:operation_class</span>       =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">MockOperation</span>
+    )
+    <span class="ruby-ivar">@serv</span>.<span class="ruby-identifier">run_tcpserver</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

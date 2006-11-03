@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>test_add (TestLdap)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-encoding.rb, line 217</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_add</span>
+    <span class="ruby-identifier">req</span>(<span class="ruby-value str">&quot;add1&quot;</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-identifier">:add</span>, <span class="ruby-value str">&quot;dc=localhost, dc=domain&quot;</span>, {
+      <span class="ruby-value str">'objectclass'</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">'top'</span>, <span class="ruby-value str">'domain'</span>],
+      <span class="ruby-value str">'o'</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">'TTSKY.NET'</span>],
+      <span class="ruby-value str">'dc'</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">'localhost'</span>],
+    }], <span class="ruby-constant">MockOperation</span>.<span class="ruby-identifier">lastop</span>)
+    <span class="ruby-identifier">req</span>(<span class="ruby-value str">&quot;add2&quot;</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-identifier">:add</span>, <span class="ruby-value str">&quot;cn=Takaaki Tateishi, dc=localhost, dc=localdomain&quot;</span>, {
+      <span class="ruby-value str">'objectclass'</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">'top'</span>, <span class="ruby-value str">'person'</span>],
+      <span class="ruby-value str">'cn'</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">'Takaaki Tateishi'</span>],
+      <span class="ruby-value str">'sn'</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">'ttate'</span>,<span class="ruby-value str">'Tateishi'</span>,<span class="ruby-value str">&quot;zero\000zero&quot;</span>],
+    }], <span class="ruby-constant">MockOperation</span>.<span class="ruby-identifier">lastop</span>)
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

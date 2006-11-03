@@ -1,0 +1,11 @@
+rails_dir: "/Users/tsaleh/thoughtbot/bcn-nextgen/"
+active_record_model: "Contact"
+basedn: "dc=bioforcesolutions,dc=com"
+port: 1389 # anything below 1000 is reserved, and must run as root.
+tcp_nodelay: true
+preforked_threads: 10
+bind_address: "0.0.0.0"
+# These don't seem to work.
+# user: "tsaleh"				# drop privileges after bind
+# group: "tsaleh"			# drop privileges after bind
+

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>split_dn (LDAP::Server::Operation)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/util.rb, line 34</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">split_dn</span>(<span class="ruby-identifier">dn</span>)
+      <span class="ruby-comment cmt"># convert \\ to \5c, \+ to \2b etc</span>
+      <span class="ruby-identifier">dn2</span> = <span class="ruby-identifier">dn</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\([ #,+&quot;\\&lt;&gt;;])/</span>) { <span class="ruby-value str">&quot;\\%02x&quot;</span> <span class="ruby-operator">%</span> <span class="ruby-identifier">$1</span>[<span class="ruby-value">0</span>] }
+
+      <span class="ruby-comment cmt"># Now we know that \\ and \, do not exist, it's safe to split</span>
+      <span class="ruby-identifier">parts</span> = <span class="ruby-identifier">dn2</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/\s*[,;]\s*/</span>)
+
+      <span class="ruby-identifier">parts</span>.<span class="ruby-identifier">collect</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">part</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">res</span> = {}
+
+        <span class="ruby-comment cmt"># Split each part into attr=val+attr=val</span>
+        <span class="ruby-identifier">avs</span> = <span class="ruby-identifier">part</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/\+/</span>)
+
+        <span class="ruby-identifier">avs</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">av</span><span class="ruby-operator">|</span>
+          <span class="ruby-comment cmt"># These should all be of form attr=value</span>
+          <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">av</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^([^=]+)=(.*)$/</span>
+            <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ProtocolError</span>, <span class="ruby-node">&quot;Bad DN component: #{av}&quot;</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">attr</span>, <span class="ruby-identifier">val</span> = <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">downcase</span>, <span class="ruby-identifier">$2</span>
+          <span class="ruby-comment cmt"># Now we can decode those bits</span>
+          <span class="ruby-identifier">attr</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp re">/\\([a-f0-9][a-f0-9])/i</span>) { <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">hex</span>.<span class="ruby-identifier">chr</span> }
+          <span class="ruby-identifier">val</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp re">/\\([a-f0-9][a-f0-9])/i</span>) { <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">hex</span>.<span class="ruby-identifier">chr</span> }
+          <span class="ruby-identifier">res</span>[<span class="ruby-identifier">attr</span>] = <span class="ruby-identifier">val</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">res</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

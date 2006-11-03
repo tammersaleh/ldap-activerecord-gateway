@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>resolve_oids (LDAP::Server::Schema)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/schema.rb, line 211</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">resolve_oids</span>
+
+      <span class="ruby-identifier">all_attrtypes</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">sup</span>
+          <span class="ruby-identifier">s</span> = <span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">a</span>.<span class="ruby-identifier">sup</span>)
+          <span class="ruby-identifier">a</span>.<span class="ruby-identifier">instance_eval</span> {
+            <span class="ruby-ivar">@sup</span> = <span class="ruby-identifier">s</span>
+            <span class="ruby-comment cmt"># inherit properties (FIXME: This breaks to_def)</span>
+            <span class="ruby-ivar">@equality</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">equality</span>
+            <span class="ruby-ivar">@ordering</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">ordering</span>
+            <span class="ruby-ivar">@substr</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">substr</span>
+            <span class="ruby-ivar">@syntax</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">syntax</span>
+            <span class="ruby-ivar">@maxlen</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">maxlen</span>
+            <span class="ruby-ivar">@singlevalue</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">singlevalue</span>
+            <span class="ruby-ivar">@collective</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">collective</span>
+            <span class="ruby-ivar">@nousermod</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">nousermod</span>
+            <span class="ruby-ivar">@usage</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">usage</span>
+          }
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">a</span>.<span class="ruby-identifier">instance_eval</span> <span class="ruby-keyword kw">do</span>
+          <span class="ruby-ivar">@syntax</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Syntax</span>.<span class="ruby-identifier">find</span>(<span class="ruby-ivar">@syntax</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@syntax</span>
+          <span class="ruby-ivar">@equality</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">MatchingRule</span>.<span class="ruby-identifier">find</span>(<span class="ruby-ivar">@equality</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@equality</span>
+          <span class="ruby-ivar">@ordering</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">MatchingRule</span>.<span class="ruby-identifier">find</span>(<span class="ruby-ivar">@ordering</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@ordering</span>
+          <span class="ruby-ivar">@substr</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">MatchingRule</span>.<span class="ruby-identifier">find</span>(<span class="ruby-ivar">@substr</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@substr</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-identifier">all_objectclasses</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">o</span>.<span class="ruby-identifier">sup</span>
+          <span class="ruby-identifier">s</span> = <span class="ruby-identifier">o</span>.<span class="ruby-identifier">sup</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">ss</span><span class="ruby-operator">|</span> <span class="ruby-identifier">find_objectclass</span>(<span class="ruby-identifier">ss</span>) }
+          <span class="ruby-identifier">o</span>.<span class="ruby-identifier">instance_eval</span> { <span class="ruby-ivar">@sup</span> = <span class="ruby-identifier">s</span> }
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">o</span>.<span class="ruby-identifier">must</span>
+          <span class="ruby-identifier">s</span> = <span class="ruby-identifier">o</span>.<span class="ruby-identifier">must</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">ss</span><span class="ruby-operator">|</span> <span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">ss</span>) }
+          <span class="ruby-identifier">o</span>.<span class="ruby-identifier">instance_eval</span> { <span class="ruby-ivar">@must</span> = <span class="ruby-identifier">s</span> }
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">o</span>.<span class="ruby-identifier">may</span>
+          <span class="ruby-identifier">s</span> = <span class="ruby-identifier">o</span>.<span class="ruby-identifier">may</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">ss</span><span class="ruby-operator">|</span> <span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">ss</span>) }
+          <span class="ruby-identifier">o</span>.<span class="ruby-identifier">instance_eval</span> { <span class="ruby-ivar">@may</span> = <span class="ruby-identifier">s</span> }
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

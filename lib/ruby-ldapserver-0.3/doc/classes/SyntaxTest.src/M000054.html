@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>test_integer (SyntaxTest)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-syntax.rb, line 7</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_integer</span>
+    <span class="ruby-identifier">s</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Syntax</span>.<span class="ruby-identifier">find</span>(<span class="ruby-value str">&quot;1.3.6.1.4.1.1466.115.121.1.27&quot;</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Syntax</span>, <span class="ruby-identifier">s</span>.<span class="ruby-identifier">class</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;Integer&quot;</span>, <span class="ruby-identifier">s</span>.<span class="ruby-identifier">desc</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;( 1.3.6.1.4.1.1466.115.121.1.27 DESC 'Integer' )&quot;</span>, <span class="ruby-identifier">s</span>.<span class="ruby-identifier">to_def</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-operator">!</span><span class="ruby-identifier">s</span>.<span class="ruby-identifier">nhr</span>)
+    <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">s</span>.<span class="ruby-identifier">match</span>(<span class="ruby-value str">&quot;123&quot;</span>))
+    <span class="ruby-identifier">assert</span>(<span class="ruby-operator">!</span><span class="ruby-identifier">s</span>.<span class="ruby-identifier">match</span>(<span class="ruby-value str">&quot;12A&quot;</span>))
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value">123</span>, <span class="ruby-identifier">s</span>.<span class="ruby-identifier">value_from_s</span>(<span class="ruby-value str">&quot;123&quot;</span>))
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;456&quot;</span>, <span class="ruby-identifier">s</span>.<span class="ruby-identifier">value_to_s</span>(<span class="ruby-value">456</span>))
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;789&quot;</span>, <span class="ruby-identifier">s</span>.<span class="ruby-identifier">value_to_s</span>(<span class="ruby-value str">&quot;789&quot;</span>))
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

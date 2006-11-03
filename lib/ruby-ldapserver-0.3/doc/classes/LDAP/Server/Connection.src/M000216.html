@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>ber_read (LDAP::Server::Connection)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/connection.rb, line 49</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">ber_read</span>(<span class="ruby-identifier">io</span>)
+      <span class="ruby-identifier">blk</span> = <span class="ruby-identifier">io</span>.<span class="ruby-identifier">read</span>(<span class="ruby-value">2</span>)          <span class="ruby-comment cmt"># minimum: short tag, short length</span>
+      <span class="ruby-identifier">throw</span>(<span class="ruby-identifier">:close</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">blk</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-identifier">tag</span> = <span class="ruby-identifier">blk</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">&amp;</span> <span class="ruby-value">0x1f</span>
+      <span class="ruby-identifier">len</span> = <span class="ruby-identifier">blk</span>[<span class="ruby-value">1</span>]
+
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">tag</span> <span class="ruby-operator">==</span> <span class="ruby-value">0x1f</span>            <span class="ruby-comment cmt"># long form</span>
+        <span class="ruby-identifier">tag</span> = <span class="ruby-value">0</span>
+        <span class="ruby-keyword kw">while</span> <span class="ruby-keyword kw">true</span>
+          <span class="ruby-identifier">ch</span> = <span class="ruby-identifier">io</span>.<span class="ruby-identifier">getc</span>
+          <span class="ruby-identifier">blk</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">ch</span>
+          <span class="ruby-identifier">tag</span> = (<span class="ruby-identifier">tag</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value">7</span>) <span class="ruby-operator">|</span> (<span class="ruby-identifier">ch</span> <span class="ruby-operator">&amp;</span> <span class="ruby-value">0x7f</span>)
+          <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">ch</span> <span class="ruby-operator">&amp;</span> <span class="ruby-value">0x80</span>) <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">len</span> = <span class="ruby-identifier">io</span>.<span class="ruby-identifier">getc</span>
+        <span class="ruby-identifier">blk</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">len</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">len</span> <span class="ruby-operator">&amp;</span> <span class="ruby-value">0x80</span>) <span class="ruby-operator">!=</span> <span class="ruby-value">0</span>      <span class="ruby-comment cmt"># long form</span>
+        <span class="ruby-identifier">len</span> = <span class="ruby-identifier">len</span> <span class="ruby-operator">&amp;</span> <span class="ruby-value">0x7f</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ProtocolError</span>, <span class="ruby-value str">&quot;Indefinite length encoding not supported&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">len</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+        <span class="ruby-identifier">offset</span> = <span class="ruby-identifier">blk</span>.<span class="ruby-identifier">length</span>
+        <span class="ruby-identifier">blk</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">io</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">len</span>)
+        <span class="ruby-comment cmt"># is there a more efficient way of doing this?</span>
+        <span class="ruby-identifier">len</span> = <span class="ruby-value">0</span>
+        <span class="ruby-identifier">blk</span>[<span class="ruby-identifier">offset</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>].<span class="ruby-identifier">each_byte</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">b</span><span class="ruby-operator">|</span> <span class="ruby-identifier">len</span> = (<span class="ruby-identifier">len</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value">8</span>) <span class="ruby-operator">|</span> <span class="ruby-identifier">b</span> }
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-identifier">offset</span> = <span class="ruby-identifier">blk</span>.<span class="ruby-identifier">length</span>
+      <span class="ruby-identifier">blk</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">io</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">len</span>)
+      <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">blk</span>
+      <span class="ruby-comment cmt"># or if we wanted to keep the partial decoding we've done:</span>
+      <span class="ruby-comment cmt"># return blk, [blk[0] &gt;&gt; 6, tag], offset</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>new (LDAP::Server)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/server.rb, line 24</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">opt</span> = <span class="ruby-constant">DEFAULT_OPT</span>)
+    <span class="ruby-ivar">@opt</span> = <span class="ruby-identifier">opt</span>
+    <span class="ruby-ivar">@opt</span>[<span class="ruby-identifier">:server</span>] = <span class="ruby-keyword kw">self</span>
+    <span class="ruby-ivar">@opt</span>[<span class="ruby-identifier">:operation_class</span>] <span class="ruby-operator">||=</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Operation</span>
+    <span class="ruby-ivar">@opt</span>[<span class="ruby-identifier">:operation_args</span>] <span class="ruby-operator">||=</span> []
+    <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span>.<span class="ruby-identifier">ssl_prepare</span>(<span class="ruby-ivar">@opt</span>)
+    <span class="ruby-ivar">@schema</span> = <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:schema</span>]      <span class="ruby-comment cmt"># may be nil</span>
+    <span class="ruby-ivar">@root_dse</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">h</span>,<span class="ruby-identifier">k</span><span class="ruby-operator">|</span> <span class="ruby-identifier">h</span>[<span class="ruby-identifier">k</span>] = [] }.<span class="ruby-identifier">merge</span>({
+        <span class="ruby-value str">'objectClass'</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-value str">'top'</span>,<span class="ruby-value str">'openLDAProotDSE'</span>,<span class="ruby-value str">'extensibleObject'</span>],
+        <span class="ruby-value str">'supportedLDAPVersion'</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-value str">'3'</span>],
+        <span class="ruby-comment cmt">#'altServer' =&gt;</span>
+        <span class="ruby-comment cmt">#'supportedExtension' =&gt;</span>
+        <span class="ruby-comment cmt">#'supportedControl' =&gt;</span>
+        <span class="ruby-comment cmt">#'supportedSASLMechanisms' =&gt;</span>
+    })
+    <span class="ruby-ivar">@root_dse</span>[<span class="ruby-value str">'subschemaSubentry'</span>] = [<span class="ruby-ivar">@schema</span>.<span class="ruby-identifier">subschema_dn</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@schema</span>
+    <span class="ruby-ivar">@root_dse</span>[<span class="ruby-value str">'namingContexts'</span>] = <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:namingContexts</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:namingContexts</span>]
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

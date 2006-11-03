@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>parse (LDAP::Server::Filter)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/filter.rb, line 44</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">asn1</span>, <span class="ruby-identifier">schema</span>=<span class="ruby-keyword kw">nil</span>)
+      <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">tag</span>
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value">0</span> <span class="ruby-comment cmt"># and</span>
+        <span class="ruby-identifier">conds</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span> <span class="ruby-identifier">parse</span>(<span class="ruby-identifier">a</span>) }
+        <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">delete</span>([<span class="ruby-identifier">:true</span>])
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:true</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">first</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:false</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">include?</span>([<span class="ruby-identifier">:false</span>])
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">unshift</span>(<span class="ruby-identifier">:and</span>)
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value">1</span> <span class="ruby-comment cmt"># or</span>
+        <span class="ruby-identifier">conds</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span> <span class="ruby-identifier">parse</span>(<span class="ruby-identifier">a</span>) }
+        <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">delete</span>([<span class="ruby-identifier">:false</span>])
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:false</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">first</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:true</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">include?</span>([<span class="ruby-identifier">:true</span>])
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">conds</span>.<span class="ruby-identifier">unshift</span>(<span class="ruby-identifier">:or</span>)
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value">2</span> <span class="ruby-comment cmt"># not</span>
+        <span class="ruby-identifier">cond</span> = <span class="ruby-identifier">parse</span>(<span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">0</span>])
+        <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">cond</span>
+        <span class="ruby-keyword kw">when</span> [<span class="ruby-identifier">:false</span>];  <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:true</span>]
+        <span class="ruby-keyword kw">when</span> [<span class="ruby-identifier">:true</span>];  <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:false</span>]
+        <span class="ruby-keyword kw">when</span> [<span class="ruby-identifier">:undef</span>]; <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:undef</span>]
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:not</span>, <span class="ruby-identifier">cond</span>]
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value">3</span> <span class="ruby-comment cmt"># equalityMatch</span>
+        <span class="ruby-identifier">attr</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">value</span>
+        <span class="ruby-identifier">val</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">value</span>
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:true</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attr</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\AobjectClass\z/i</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">val</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\Atop\z/i</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">schema</span>
+          <span class="ruby-identifier">a</span> = <span class="ruby-identifier">schema</span>.<span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">attr</span>)
+          <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:undef</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">equality</span>
+          <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:eq</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">equality</span>, <span class="ruby-identifier">val</span>]
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:eq</span>, <span class="ruby-identifier">attr</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">val</span>]
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value">4</span> <span class="ruby-comment cmt"># substrings</span>
+        <span class="ruby-identifier">attr</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">value</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">schema</span>
+          <span class="ruby-identifier">a</span> = <span class="ruby-identifier">schema</span>.<span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">attr</span>)
+          <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:undef</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">substr</span>
+          <span class="ruby-identifier">res</span> = [<span class="ruby-identifier">:substrings</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">substr</span>, <span class="ruby-keyword kw">nil</span>]
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">res</span> = [<span class="ruby-identifier">:substrings</span>, <span class="ruby-identifier">attr</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-keyword kw">nil</span>]
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">final_val</span> = <span class="ruby-keyword kw">nil</span>
+
+        <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">value</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">ss</span><span class="ruby-operator">|</span>
+          <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">ss</span>.<span class="ruby-identifier">tag</span>
+          <span class="ruby-keyword kw">when</span> <span class="ruby-value">0</span>
+            <span class="ruby-identifier">res</span>[<span class="ruby-value">3</span>] = <span class="ruby-identifier">ss</span>.<span class="ruby-identifier">value</span>
+          <span class="ruby-keyword kw">when</span> <span class="ruby-value">1</span>
+            <span class="ruby-identifier">res</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">ss</span>.<span class="ruby-identifier">value</span>
+          <span class="ruby-keyword kw">when</span> <span class="ruby-value">2</span>
+            <span class="ruby-identifier">final_val</span> = <span class="ruby-identifier">ss</span>.<span class="ruby-identifier">value</span>
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ProtocolError</span>,
+              <span class="ruby-node">&quot;Unrecognised substring tag #{ss.tag.inspect}&quot;</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">res</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">final_val</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">res</span>
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value">5</span> <span class="ruby-comment cmt"># greaterOrEqual</span>
+        <span class="ruby-identifier">attr</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">value</span>
+        <span class="ruby-identifier">val</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">value</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">schema</span>
+          <span class="ruby-identifier">a</span> = <span class="ruby-identifier">schema</span>.<span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">attr</span>)
+          <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:undef</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">ordering</span>
+          <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:ge</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">ordering</span>, <span class="ruby-identifier">val</span>]
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:ge</span>, <span class="ruby-identifier">attr</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">val</span>]
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value">6</span> <span class="ruby-comment cmt"># lessOrEqual</span>
+        <span class="ruby-identifier">attr</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">value</span>
+        <span class="ruby-identifier">val</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">value</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">schema</span>
+          <span class="ruby-identifier">a</span> = <span class="ruby-identifier">schema</span>.<span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">attr</span>)
+          <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:undef</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">ordering</span>
+          <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:le</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">ordering</span>, <span class="ruby-identifier">val</span>]
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:le</span>, <span class="ruby-identifier">attr</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">val</span>]
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value">7</span> <span class="ruby-comment cmt"># present</span>
+        <span class="ruby-identifier">attr</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:true</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attr</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\AobjectClass\z/i</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">schema</span>
+          <span class="ruby-keyword kw">begin</span>
+            <span class="ruby-identifier">a</span> = <span class="ruby-identifier">schema</span>.<span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">attr</span>)
+            <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:present</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">to_s</span>]
+          <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">UndefinedAttributeType</span>
+            <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:false</span>]
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:present</span>, <span class="ruby-identifier">attr</span>]
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value">8</span> <span class="ruby-comment cmt"># approxMatch</span>
+        <span class="ruby-identifier">attr</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">value</span>
+        <span class="ruby-identifier">val</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">value</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">schema</span>
+          <span class="ruby-identifier">a</span> = <span class="ruby-identifier">schema</span>.<span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">attr</span>)
+          <span class="ruby-comment cmt"># I don't know how properly to deal with approxMatch. I'm assuming</span>
+          <span class="ruby-comment cmt"># that the object will have an equality MatchingRule, and we</span>
+          <span class="ruby-comment cmt"># can defer to that.</span>
+          <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:undef</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">equality</span>
+          <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:approx</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">equality</span>, <span class="ruby-identifier">val</span>]
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:approx</span>, <span class="ruby-identifier">attr</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">val</span>]
+
+      <span class="ruby-comment cmt">#when 9 # extensibleMatch</span>
+      <span class="ruby-comment cmt">#  FIXME</span>
+
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ProtocolError</span>,
+          <span class="ruby-node">&quot;Unrecognised Filter tag #{asn1.tag}&quot;</span>
+      <span class="ruby-keyword kw">end</span>
+
+    <span class="ruby-comment cmt"># Unknown attribute type</span>
+    <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">UndefinedAttributeType</span>
+      <span class="ruby-keyword kw">return</span> [<span class="ruby-identifier">:undef</span>]
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

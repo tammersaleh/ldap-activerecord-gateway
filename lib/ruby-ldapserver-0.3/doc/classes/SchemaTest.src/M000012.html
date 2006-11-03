@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>test_loadschema (SchemaTest)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-schema.rb, line 80</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_loadschema</span>
+    <span class="ruby-identifier">s</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Schema</span>.<span class="ruby-identifier">new</span>
+    <span class="ruby-identifier">s</span>.<span class="ruby-identifier">load_system</span>
+    <span class="ruby-identifier">s</span>.<span class="ruby-identifier">load_file</span>(<span class="ruby-value str">&quot;core.schema&quot;</span>)
+    <span class="ruby-identifier">s</span>.<span class="ruby-identifier">resolve_oids</span>
+    <span class="ruby-identifier">a</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">find_attrtype</span>(<span class="ruby-value str">&quot;objectclass&quot;</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;objectClass&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">name</span>)
+    <span class="ruby-identifier">a</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">find_attrtype</span>(<span class="ruby-value str">&quot;COMMONNAME&quot;</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Schema</span><span class="ruby-operator">::</span><span class="ruby-constant">AttributeType</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">class</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;caseIgnoreMatch&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">equality</span>.<span class="ruby-identifier">to_s</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">MatchingRule</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">equality</span>.<span class="ruby-identifier">class</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;caseIgnoreSubstringsMatch&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">substr</span>.<span class="ruby-identifier">to_s</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">MatchingRule</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">substr</span>.<span class="ruby-identifier">class</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;1.3.6.1.4.1.1466.115.121.1.15&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">syntax</span>.<span class="ruby-identifier">to_s</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Syntax</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">syntax</span>.<span class="ruby-identifier">class</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;cn&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">name</span>)
+    <span class="ruby-identifier">a</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">find_attrtype</span>(<span class="ruby-value str">&quot;COUNTRYname&quot;</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;c&quot;</span>, <span class="ruby-identifier">a</span>.<span class="ruby-identifier">name</span>)
+    <span class="ruby-comment cmt"># I modified core.schema so that countryName has the appropriate syntax</span>
+    <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">a</span>.<span class="ruby-identifier">syntax</span>.<span class="ruby-identifier">match</span>(<span class="ruby-value str">&quot;GB&quot;</span>))
+    <span class="ruby-identifier">assert</span>(<span class="ruby-operator">!</span><span class="ruby-identifier">a</span>.<span class="ruby-identifier">syntax</span>.<span class="ruby-identifier">match</span>(<span class="ruby-value str">&quot;ABC&quot;</span>))
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

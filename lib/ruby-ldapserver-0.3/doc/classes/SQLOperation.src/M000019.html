@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>search (SQLOperation)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File examples/rbslapd2.rb, line 105</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">search</span>(<span class="ruby-identifier">basedn</span>, <span class="ruby-identifier">scope</span>, <span class="ruby-identifier">deref</span>, <span class="ruby-identifier">filter</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">UnwillingToPerform</span>, <span class="ruby-value str">&quot;Bad base DN&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">basedn</span> <span class="ruby-operator">==</span> <span class="ruby-constant">BASEDN</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">UnwillingToPerform</span>, <span class="ruby-value str">&quot;Bad filter&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">filter</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">1</span>] <span class="ruby-operator">==</span> [<span class="ruby-identifier">:eq</span>, <span class="ruby-value str">&quot;uid&quot;</span>]
+    <span class="ruby-identifier">uid</span> = <span class="ruby-identifier">filter</span>[<span class="ruby-value">3</span>]
+    <span class="ruby-ivar">@@pool</span>.<span class="ruby-identifier">borrow</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">sql</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">q</span> = <span class="ruby-node">&quot;select login_id,passwd from #{TABLE} where login='#{sql.quote(uid)}'&quot;</span>
+      <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;SQL Query #{sql.object_id}: #{q}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$debug</span>
+      <span class="ruby-identifier">res</span> = <span class="ruby-identifier">sql</span>.<span class="ruby-identifier">query</span>(<span class="ruby-identifier">q</span>)
+      <span class="ruby-identifier">res</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">login_id</span>,<span class="ruby-identifier">passwd</span><span class="ruby-operator">|</span>
+        <span class="ruby-ivar">@@cache</span>.<span class="ruby-identifier">add</span>(<span class="ruby-identifier">login_id</span>, <span class="ruby-identifier">passwd</span>)
+        <span class="ruby-identifier">send_SearchResultEntry</span>(<span class="ruby-node">&quot;id=#{login_id},#{BASEDN}&quot;</span>, {
+          <span class="ruby-value str">&quot;maildir&quot;</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-node">&quot;/netapp/#{uid}/&quot;</span>],
+        })
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

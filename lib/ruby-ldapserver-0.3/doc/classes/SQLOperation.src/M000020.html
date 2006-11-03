@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>simple_bind (SQLOperation)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File examples/rbslapd2.rb, line 124</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">simple_bind</span>(<span class="ruby-identifier">version</span>, <span class="ruby-identifier">dn</span>, <span class="ruby-identifier">password</span>)
+    <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">dn</span>.<span class="ruby-identifier">nil?</span>   <span class="ruby-comment cmt"># accept anonymous</span>
+
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">UnwillingToPerform</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">dn</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/\Aid=(\d+),#{BASEDN}\z/</span>
+    <span class="ruby-identifier">login_id</span> = <span class="ruby-identifier">$1</span>
+    <span class="ruby-identifier">dbpw</span> = <span class="ruby-ivar">@@cache</span>.<span class="ruby-identifier">find</span>(<span class="ruby-identifier">login_id</span>)
+    <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">dbpw</span>
+      <span class="ruby-ivar">@@pool</span>.<span class="ruby-identifier">borrow</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">sql</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">q</span> = <span class="ruby-node">&quot;select passwd from #{TABLE} where login_id=#{login_id}&quot;</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;SQL Query #{sql.object_id}: #{q}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$debug</span>
+        <span class="ruby-identifier">res</span> = <span class="ruby-identifier">sql</span>.<span class="ruby-identifier">query</span>(<span class="ruby-identifier">q</span>)
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">res</span>.<span class="ruby-identifier">num_rows</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+          <span class="ruby-identifier">dbpw</span> = <span class="ruby-identifier">res</span>.<span class="ruby-identifier">fetch_row</span>[<span class="ruby-value">0</span>]
+          <span class="ruby-ivar">@@cache</span>.<span class="ruby-identifier">add</span>(<span class="ruby-identifier">login_id</span>, <span class="ruby-identifier">dbpw</span>)
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">InvalidCredentials</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">dbpw</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">dbpw</span> <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;&quot;</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">dbpw</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">password</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

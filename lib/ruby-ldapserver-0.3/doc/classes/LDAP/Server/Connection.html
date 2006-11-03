@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: LDAP::Server::Connection</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">LDAP::Server::Connection</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../../files/lib/ldap/server/connection_rb.html">
+                lib/ldap/server/connection.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                Object
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+An object which handles an <a href="../../LDAP.html">LDAP</a> connection.
+Note that <a href="../../LDAP.html">LDAP</a> allows requests and responses
+to be exchanged asynchronously: e.g. a client can send three requests, and
+the three responses can come back in any order. For that reason, we start a
+new thread for each request, and we need a mutex on the io object so that
+multiple responses don&#8217;t interfere with each other.
+</p>
+
+    </div>
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000220">abandon</a>&nbsp;&nbsp;
+      <a href="#M000221">abandon_all</a>&nbsp;&nbsp;
+      <a href="#M000216">ber_read</a>&nbsp;&nbsp;
+      <a href="#M000217">handle_requests</a>&nbsp;&nbsp;
+      <a href="#M000214">log</a>&nbsp;&nbsp;
+      <a href="#M000213">new</a>&nbsp;&nbsp;
+      <a href="#M000223">send_notice_of_disconnection</a>&nbsp;&nbsp;
+      <a href="#M000222">send_unsolicited_notification</a>&nbsp;&nbsp;
+      <a href="#M000215">startssl</a>&nbsp;&nbsp;
+      <a href="#M000218">write</a>&nbsp;&nbsp;
+      <a href="#M000219">writelock</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+    <div id="attribute-list">
+      <h3 class="section-bar">Attributes</h3>
+
+      <div class="name-list">
+        <table>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">binddn</td>
+          <td class="context-item-value">&nbsp;[R]&nbsp;</td>
+          <td class="context-item-desc"></td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">opt</td>
+          <td class="context-item-value">&nbsp;[R]&nbsp;</td>
+          <td class="context-item-desc"></td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">version</td>
+          <td class="context-item-value">&nbsp;[R]&nbsp;</td>
+          <td class="context-item-desc"></td>
+        </tr>
+        </table>
+      </div>
+    </div>
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000213" class="method-detail">
+        <a name="M000213"></a>
+
+        <div class="method-heading">
+          <a href="Connection.src/M000213.html" target="Code" class="method-signature"
+            onclick="popupCode('Connection.src/M000213.html');return false;">
+          <span class="method-name">new</span><span class="method-args">(io, opt={})</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000220" class="method-detail">
+        <a name="M000220"></a>
+
+        <div class="method-heading">
+          <a href="Connection.src/M000220.html" target="Code" class="method-signature"
+            onclick="popupCode('Connection.src/M000220.html');return false;">
+          <span class="method-name">abandon</span><span class="method-args">(messageID)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000221" class="method-detail">
+        <a name="M000221"></a>
+
+        <div class="method-heading">
+          <a href="Connection.src/M000221.html" target="Code" class="method-signature"
+            onclick="popupCode('Connection.src/M000221.html');return false;">
+          <span class="method-name">abandon_all</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000216" class="method-detail">
+        <a name="M000216"></a>
+
+        <div class="method-heading">
+          <a href="Connection.src/M000216.html" target="Code" class="method-signature"
+            onclick="popupCode('Connection.src/M000216.html');return false;">
+          <span class="method-name">ber_read</span><span class="method-args">(io)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Read one ASN1 element from the given stream. Return String containing the
+raw element.
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000217" class="method-detail">
+        <a name="M000217"></a>
+
+        <div class="method-heading">
+          <a href="Connection.src/M000217.html" target="Code" class="method-signature"
+            onclick="popupCode('Connection.src/M000217.html');return false;">
+          <span class="method-name">handle_requests</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000214" class="method-detail">
+        <a name="M000214"></a>
+
+        <div class="method-heading">
+          <a href="Connection.src/M000214.html" target="Code" class="method-signature"
+            onclick="popupCode('Connection.src/M000214.html');return false;">
+          <span class="method-name">log</span><span class="method-args">(msg)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000223" class="method-detail">
+        <a name="M000223"></a>
+
+        <div class="method-heading">
+          <a href="Connection.src/M000223.html" target="Code" class="method-signature"
+            onclick="popupCode('Connection.src/M000223.html');return false;">
+          <span class="method-name">send_notice_of_disconnection</span><span class="method-args">(resultCode, errorMessage=&quot;&quot;)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000222" class="method-detail">
+        <a name="M000222"></a>
+
+        <div class="method-heading">
+          <a href="Connection.src/M000222.html" target="Code" class="method-signature"
+            onclick="popupCode('Connection.src/M000222.html');return false;">
+          <span class="method-name">send_unsolicited_notification</span><span class="method-args">(resultCode, opt={})</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000215" class="method-detail">
+        <a name="M000215"></a>
+
+        <div class="method-heading">
+          <a href="Connection.src/M000215.html" target="Code" class="method-signature"
+            onclick="popupCode('Connection.src/M000215.html');return false;">
+          <span class="method-name">startssl</span><span class="method-args">( {|| ...}</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000218" class="method-detail">
+        <a name="M000218"></a>
+
+        <div class="method-heading">
+          <a href="Connection.src/M000218.html" target="Code" class="method-signature"
+            onclick="popupCode('Connection.src/M000218.html');return false;">
+          <span class="method-name">write</span><span class="method-args">(data)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000219" class="method-detail">
+        <a name="M000219"></a>
+
+        <div class="method-heading">
+          <a href="Connection.src/M000219.html" target="Code" class="method-signature"
+            onclick="popupCode('Connection.src/M000219.html');return false;">
+          <span class="method-name">writelock</span><span class="method-args">() {|@io| ...}</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

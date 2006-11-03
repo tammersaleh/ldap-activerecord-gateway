@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: LDAP::Server</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">LDAP::Server</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../files/lib/ldap/server/connection_rb.html">
+                lib/ldap/server/connection.rb
+                </a>
+        <br />
+                <a href="../../files/lib/ldap/server/filter_rb.html">
+                lib/ldap/server/filter.rb
+                </a>
+        <br />
+                <a href="../../files/lib/ldap/server/match_rb.html">
+                lib/ldap/server/match.rb
+                </a>
+        <br />
+                <a href="../../files/lib/ldap/server/operation_rb.html">
+                lib/ldap/server/operation.rb
+                </a>
+        <br />
+                <a href="../../files/lib/ldap/server/preforkserver_rb.html">
+                lib/ldap/server/preforkserver.rb
+                </a>
+        <br />
+                <a href="../../files/lib/ldap/server/schema_rb.html">
+                lib/ldap/server/schema.rb
+                </a>
+        <br />
+                <a href="../../files/lib/ldap/server/server_rb.html">
+                lib/ldap/server/server.rb
+                </a>
+        <br />
+                <a href="../../files/lib/ldap/server/syntax_rb.html">
+                lib/ldap/server/syntax.rb
+                </a>
+        <br />
+                <a href="../../files/lib/ldap/server/tcpserver_rb.html">
+                lib/ldap/server/tcpserver.rb
+                </a>
+        <br />
+                <a href="../../files/lib/ldap/server/util_rb.html">
+                lib/ldap/server/util.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                Object
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000117">join</a>&nbsp;&nbsp;
+      <a href="#M000114">new</a>&nbsp;&nbsp;
+      <a href="#M000113">preforkserver</a>&nbsp;&nbsp;
+      <a href="#M000116">run_prefork</a>&nbsp;&nbsp;
+      <a href="#M000115">run_tcpserver</a>&nbsp;&nbsp;
+      <a href="#M000118">stop</a>&nbsp;&nbsp;
+      <a href="#M000119">tcpserver</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Class <a href="Server/Connection.html" class="link">LDAP::Server::Connection</a><br />
+Class <a href="Server/Filter.html" class="link">LDAP::Server::Filter</a><br />
+Class <a href="Server/MatchingRule.html" class="link">LDAP::Server::MatchingRule</a><br />
+Class <a href="Server/Operation.html" class="link">LDAP::Server::Operation</a><br />
+Class <a href="Server/Schema.html" class="link">LDAP::Server::Schema</a><br />
+Class <a href="Server/Syntax.html" class="link">LDAP::Server::Syntax</a><br />
+
+    </div>
+
+    <div id="constants-list">
+      <h3 class="section-bar">Constants</h3>
+
+      <div class="name-list">
+        <table summary="Constants">
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">BaseObject</td>
+          <td>=</td>
+          <td class="context-item-value">0</td>
+          <td width="3em">&nbsp;</td>
+          <td class="context-item-desc">
+Scope
+
+</td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">SingleLevel</td>
+          <td>=</td>
+          <td class="context-item-value">1</td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">WholeSubtree</td>
+          <td>=</td>
+          <td class="context-item-value">2</td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">NeverDerefAliases</td>
+          <td>=</td>
+          <td class="context-item-value">0</td>
+          <td width="3em">&nbsp;</td>
+          <td class="context-item-desc">
+DerefAliases
+
+</td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">DerefInSearching</td>
+          <td>=</td>
+          <td class="context-item-value">1</td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">DerefFindingBaseObj</td>
+          <td>=</td>
+          <td class="context-item-value">2</td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">DerefAlways</td>
+          <td>=</td>
+          <td class="context-item-value">3</td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">DEFAULT_OPT</td>
+          <td>=</td>
+          <td class="context-item-value">{       :port=&gt;389,       :nodelay=&gt;true,   }</td>
+        </tr>
+        </table>
+      </div>
+    </div>
+
+
+
+    <div id="attribute-list">
+      <h3 class="section-bar">Attributes</h3>
+
+      <div class="name-list">
+        <table>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">root_dse</td>
+          <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
+          <td class="context-item-desc"></td>
+        </tr>
+        </table>
+      </div>
+    </div>
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000114" class="method-detail">
+        <a name="M000114"></a>
+
+        <div class="method-heading">
+          <a href="Server.src/M000114.html" target="Code" class="method-signature"
+            onclick="popupCode('Server.src/M000114.html');return false;">
+          <span class="method-name">new</span><span class="method-args">(opt = DEFAULT_OPT)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Create a new server. Options include all those to tcpserver/preforkserver
+plus:
+</p>
+<pre>
+  :operation_class=&gt;Class                   - set Operation handler class
+  :operation_args=&gt;[...]                    - args to Operation.new
+  :ssl_key_file=&gt;pem, :ssl_cert_file=&gt;pem   - enable SSL
+  :ssl_ca_path=&gt;directory                   - verify peer certificates
+  :schema=&gt;Schema                           - Schema object
+  :namingContexts=&gt;[dn, ...]                - base DN(s) we answer
+</pre>
+        </div>
+      </div>
+
+      <div id="method-M000113" class="method-detail">
+        <a name="M000113"></a>
+
+        <div class="method-heading">
+          <a href="Server.src/M000113.html" target="Code" class="method-signature"
+            onclick="popupCode('Server.src/M000113.html');return false;">
+          <span class="method-name">preforkserver</span><span class="method-args">(opt, &amp;blk)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Accept connections on a port, and for each one run the given block in one
+of N pre-forked children. Returns a Thread object for the listener.
+</p>
+<p>
+Options:
+</p>
+<pre>
+  :port=&gt;port number [required]
+  :bindaddr=&gt;&quot;IP address&quot;
+  :user=&gt;&quot;username&quot;                         - drop privileges after bind
+  :group=&gt;&quot;groupname&quot;                       - ditto
+  :logger=&gt;object                           - implements &lt;&lt; method
+  :listen=&gt;number                           - listen queue depth
+  :nodelay=&gt;true                            - set TCP_NODELAY option
+  :min_servers=&gt;N                           - prefork parameters
+  :max_servers=&gt;N
+  :max_requests_per_child=&gt;N
+  :max_idle=&gt;N                              - seconds
+</pre>
+        </div>
+      </div>
+
+      <div id="method-M000119" class="method-detail">
+        <a name="M000119"></a>
+
+        <div class="method-heading">
+          <a href="Server.src/M000119.html" target="Code" class="method-signature"
+            onclick="popupCode('Server.src/M000119.html');return false;">
+          <span class="method-name">tcpserver</span><span class="method-args">(opt, &amp;blk)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Accept connections on a port, and for each one start a new thread and run
+the given block. Returns the Thread object for the listener.
+</p>
+<p>
+FIXME:
+</p>
+<ul>
+<li>have a limit on total number of concurrent connects
+
+</li>
+<li>have a limit on connections from a single IP, or from a /24 (to avoid the
+trivial DoS that the first limit creates)
+
+</li>
+<li>ACL using source IP address (or perhaps that belongs in application)
+
+</li>
+</ul>
+<p>
+Options:
+</p>
+<pre>
+  :port=&gt;port number [required]
+  :bindaddr=&gt;&quot;IP address&quot;
+  :user=&gt;&quot;username&quot;                         - drop privileges after bind
+  :group=&gt;&quot;groupname&quot;                       - ditto
+  :logger=&gt;object                           - implements &lt;&lt; method
+  :listen=&gt;number                           - listen queue depth
+  :nodelay=&gt;true                            - set TCP_NODELAY option
+</pre>
+        </div>
+      </div>
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000117" class="method-detail">
+        <a name="M000117"></a>
+
+        <div class="method-heading">
+          <a href="Server.src/M000117.html" target="Code" class="method-signature"
+            onclick="popupCode('Server.src/M000117.html');return false;">
+          <span class="method-name">join</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000116" class="method-detail">
+        <a name="M000116"></a>
+
+        <div class="method-heading">
+          <a href="Server.src/M000116.html" target="Code" class="method-signature"
+            onclick="popupCode('Server.src/M000116.html');return false;">
+          <span class="method-name">run_prefork</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000115" class="method-detail">
+        <a name="M000115"></a>
+
+        <div class="method-heading">
+          <a href="Server.src/M000115.html" target="Code" class="method-signature"
+            onclick="popupCode('Server.src/M000115.html');return false;">
+          <span class="method-name">run_tcpserver</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000118" class="method-detail">
+        <a name="M000118"></a>
+
+        <div class="method-heading">
+          <a href="Server.src/M000118.html" target="Code" class="method-signature"
+            onclick="popupCode('Server.src/M000118.html');return false;">
+          <span class="method-name">stop</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

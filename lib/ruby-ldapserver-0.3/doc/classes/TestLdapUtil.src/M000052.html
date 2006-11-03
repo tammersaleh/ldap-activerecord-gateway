@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>test_split_dn (TestLdapUtil)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-util.rb, line 9</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_split_dn</span>
+    <span class="ruby-comment cmt"># examples from RFC 2253</span>
+    <span class="ruby-identifier">assert_equal</span>(
+        [{<span class="ruby-value str">&quot;cn&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;Steve Kille&quot;</span>},{<span class="ruby-value str">&quot;o&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;Isode Limited&quot;</span>},{<span class="ruby-value str">&quot;c&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;GB&quot;</span>}],
+        <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Operation</span>.<span class="ruby-identifier">split_dn</span>(<span class="ruby-value str">&quot;CN=Steve Kille , O=Isode Limited;C=GB&quot;</span>)
+    )
+    <span class="ruby-identifier">assert_equal</span>(
+        [{<span class="ruby-value str">&quot;ou&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;Sales&quot;</span>,<span class="ruby-value str">&quot;cn&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;J. Smith&quot;</span>},{<span class="ruby-value str">&quot;o&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;Widget Inc.&quot;</span>},{<span class="ruby-value str">&quot;c&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;US&quot;</span>}],
+        <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Operation</span>.<span class="ruby-identifier">split_dn</span>(<span class="ruby-value str">&quot;OU=Sales+CN=J. Smith,O=Widget Inc.,C=US&quot;</span>)
+    )
+    <span class="ruby-identifier">assert_equal</span>(
+        [{<span class="ruby-value str">&quot;cn&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;L. Eagle&quot;</span>},{<span class="ruby-value str">&quot;o&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;Sue, Grabbit and Runn&quot;</span>},{<span class="ruby-value str">&quot;c&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;GB&quot;</span>}],
+        <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Operation</span>.<span class="ruby-identifier">split_dn</span>(<span class="ruby-value str">&quot;CN=L. Eagle,O=Sue\\, Grabbit and Runn,C=GB&quot;</span>)
+    )
+    <span class="ruby-identifier">assert_equal</span>(
+        [{<span class="ruby-value str">&quot;cn&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;Before\rAfter&quot;</span>},{<span class="ruby-value str">&quot;o&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;Test&quot;</span>},{<span class="ruby-value str">&quot;c&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;GB&quot;</span>}],
+        <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Operation</span>.<span class="ruby-identifier">split_dn</span>(<span class="ruby-value str">&quot;CN=Before\\0DAfter,O=Test,C=GB&quot;</span>)
+    )
+    <span class="ruby-identifier">res</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">Operation</span>.<span class="ruby-identifier">split_dn</span>(<span class="ruby-value str">&quot;SN=Lu\\C4\\8Di\\C4\\87&quot;</span>)
+    <span class="ruby-identifier">assert_equal</span>([{<span class="ruby-value str">&quot;sn&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;Lu\xc4\x8di\xc4\x87&quot;</span>}], <span class="ruby-identifier">res</span>)
+
+    <span class="ruby-comment cmt"># Just for fun, let's try parsing it as UTF8</span>
+    <span class="ruby-identifier">r</span> = <span class="ruby-identifier">res</span>[<span class="ruby-value">0</span>][<span class="ruby-value str">&quot;sn&quot;</span>].<span class="ruby-identifier">scan</span>(<span class="ruby-regexp re">/./</span><span class="ruby-identifier">u</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-value str">&quot;L&quot;</span>, <span class="ruby-value str">&quot;u&quot;</span>, <span class="ruby-value str">&quot;\xc4\x8d&quot;</span>, <span class="ruby-value str">&quot;i&quot;</span>, <span class="ruby-value str">&quot;\xc4\x87&quot;</span>], <span class="ruby-identifier">r</span>)
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

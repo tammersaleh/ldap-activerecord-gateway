@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>to_def (LDAP::Server::Schema::AttributeType)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/schema.rb, line 491</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_def</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@def</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@def</span>
+        <span class="ruby-identifier">ans</span> = <span class="ruby-node">&quot;( #{@oid} &quot;</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@names</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword kw">or</span> <span class="ruby-ivar">@names</span>.<span class="ruby-identifier">empty?</span>
+          <span class="ruby-comment cmt"># nothing</span>
+        <span class="ruby-keyword kw">elsif</span> <span class="ruby-ivar">@names</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+          <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;NAME '#{@names.first}' &quot;</span>
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;NAME ( &quot;</span>
+          <span class="ruby-ivar">@names</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">n</span><span class="ruby-operator">|</span> <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;'#{n}' &quot;</span> }
+          <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;) &quot;</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;DESC '#{@desc}' &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@desc</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;OBSOLETE &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@obsolete</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;SUP #{@sup} &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@sup</span>                   <span class="ruby-comment cmt"># oid</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;EQUALITY #{@equality} &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@equality</span>    <span class="ruby-comment cmt"># oid</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;ORDERING #{@ordering} &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@ordering</span>    <span class="ruby-comment cmt"># oid</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;SUBSTR #{@substr} &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@substr</span>          <span class="ruby-comment cmt"># oid</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;SYNTAX #{@syntax}#{@maxlen &amp;&amp; &quot;{#{@maxlen}}&quot;} &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@syntax</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;SINGLE-VALUE &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@singlevalue</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;COLLECTIVE &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@collective</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;NO-USER-MODIFICATION &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@nousermod</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;USAGE #{@usage} &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@usage</span>
+        <span class="ruby-identifier">ans</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;)&quot;</span>
+        <span class="ruby-ivar">@def</span> = <span class="ruby-identifier">ans</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

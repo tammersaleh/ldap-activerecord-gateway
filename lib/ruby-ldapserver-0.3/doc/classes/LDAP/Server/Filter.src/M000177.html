@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>run (LDAP::Server::Filter)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/filter.rb, line 172</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">run</span>(<span class="ruby-identifier">filter</span>, <span class="ruby-identifier">av</span>)
+      <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">filter</span>[<span class="ruby-value">0</span>]
+      <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:and</span>
+        <span class="ruby-identifier">res</span> = <span class="ruby-keyword kw">true</span>
+        <span class="ruby-identifier">filter</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">elem</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">r</span> = <span class="ruby-identifier">run</span>(<span class="ruby-identifier">elem</span>, <span class="ruby-identifier">av</span>)
+          <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">r</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">false</span>
+          <span class="ruby-identifier">res</span> = <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">r</span>.<span class="ruby-identifier">nil?</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">res</span>
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:or</span>
+        <span class="ruby-identifier">res</span> = <span class="ruby-keyword kw">false</span>
+        <span class="ruby-identifier">filter</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">elem</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">r</span> = <span class="ruby-identifier">run</span>(<span class="ruby-identifier">elem</span>, <span class="ruby-identifier">av</span>)
+          <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">r</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">true</span>
+          <span class="ruby-identifier">res</span> = <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">r</span>.<span class="ruby-identifier">nil?</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">res</span>
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:not</span>
+        <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">run</span>(<span class="ruby-identifier">filter</span>[<span class="ruby-value">1</span>], <span class="ruby-identifier">av</span>)
+        <span class="ruby-keyword kw">when</span> <span class="ruby-keyword kw">true</span>;      <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-keyword kw">false</span>;     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>
+        <span class="ruby-keyword kw">else</span>            <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span>
+        <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:present</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">av</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">filter</span>[<span class="ruby-value">1</span>])
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:eq</span>, <span class="ruby-identifier">:approx</span>, <span class="ruby-identifier">:le</span>, <span class="ruby-identifier">:ge</span>, <span class="ruby-identifier">:substrings</span>
+        <span class="ruby-comment cmt"># the filter now includes a suitable matching object</span>
+        <span class="ruby-keyword kw">return</span> (<span class="ruby-identifier">filter</span>[<span class="ruby-value">2</span>] <span class="ruby-operator">||</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">MatchingRule</span><span class="ruby-operator">::</span><span class="ruby-constant">DefaultMatch</span>).<span class="ruby-identifier">send</span>(
+                <span class="ruby-identifier">filter</span>.<span class="ruby-identifier">first</span>, <span class="ruby-identifier">av</span>[<span class="ruby-identifier">filter</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">to_s</span>], <span class="ruby-operator">*</span><span class="ruby-identifier">filter</span>[<span class="ruby-value">3</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>])
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:true</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:false</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+
+      <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:undef</span>
+        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">OperationsError</span>,
+        <span class="ruby-node">&quot;Unimplemented filter #{filter.first.inspect}&quot;</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

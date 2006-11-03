@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: LDAP::ResultError</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">LDAP::ResultError</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../files/lib/ldap/server/result_rb.html">
+                lib/ldap/server/result.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                <a href="Error.html">
+                Error
+               </a>
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+<a href="ResultError.html">ResultError</a> constants from RFC 2251 4.1.10;
+these are all exceptions which can be raised
+</p>
+
+    </div>
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000072">[]</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Class <a href="ResultError/AdminLimitExceeded.html" class="link">LDAP::ResultError::AdminLimitExceeded</a><br />
+Class <a href="ResultError/AffectsMultipleDSAs.html" class="link">LDAP::ResultError::AffectsMultipleDSAs</a><br />
+Class <a href="ResultError/AliasDereferencingProblem.html" class="link">LDAP::ResultError::AliasDereferencingProblem</a><br />
+Class <a href="ResultError/AliasProblem.html" class="link">LDAP::ResultError::AliasProblem</a><br />
+Class <a href="ResultError/AttributeOrValueExists.html" class="link">LDAP::ResultError::AttributeOrValueExists</a><br />
+Class <a href="ResultError/AuthMethodNotSupported.html" class="link">LDAP::ResultError::AuthMethodNotSupported</a><br />
+Class <a href="ResultError/Busy.html" class="link">LDAP::ResultError::Busy</a><br />
+Class <a href="ResultError/CompareFalse.html" class="link">LDAP::ResultError::CompareFalse</a><br />
+Class <a href="ResultError/CompareTrue.html" class="link">LDAP::ResultError::CompareTrue</a><br />
+Class <a href="ResultError/ConfidentialityRequired.html" class="link">LDAP::ResultError::ConfidentialityRequired</a><br />
+Class <a href="ResultError/ConstraintViolation.html" class="link">LDAP::ResultError::ConstraintViolation</a><br />
+Class <a href="ResultError/EntryAlreadyExists.html" class="link">LDAP::ResultError::EntryAlreadyExists</a><br />
+Class <a href="ResultError/InappropriateAuthentication.html" class="link">LDAP::ResultError::InappropriateAuthentication</a><br />
+Class <a href="ResultError/InappropriateMatching.html" class="link">LDAP::ResultError::InappropriateMatching</a><br />
+Class <a href="ResultError/InsufficientAccessRights.html" class="link">LDAP::ResultError::InsufficientAccessRights</a><br />
+Class <a href="ResultError/InvalidAttributeSyntax.html" class="link">LDAP::ResultError::InvalidAttributeSyntax</a><br />
+Class <a href="ResultError/InvalidCredentials.html" class="link">LDAP::ResultError::InvalidCredentials</a><br />
+Class <a href="ResultError/InvalidDNSyntax.html" class="link">LDAP::ResultError::InvalidDNSyntax</a><br />
+Class <a href="ResultError/IsLeaf.html" class="link">LDAP::ResultError::IsLeaf</a><br />
+Class <a href="ResultError/LoopDetect.html" class="link">LDAP::ResultError::LoopDetect</a><br />
+Class <a href="ResultError/NamingViolation.html" class="link">LDAP::ResultError::NamingViolation</a><br />
+Class <a href="ResultError/NoSuchAttribute.html" class="link">LDAP::ResultError::NoSuchAttribute</a><br />
+Class <a href="ResultError/NoSuchObject.html" class="link">LDAP::ResultError::NoSuchObject</a><br />
+Class <a href="ResultError/NotAllowedOnNonLeaf.html" class="link">LDAP::ResultError::NotAllowedOnNonLeaf</a><br />
+Class <a href="ResultError/NotAllowedOnRDN.html" class="link">LDAP::ResultError::NotAllowedOnRDN</a><br />
+Class <a href="ResultError/ObjectClassModsProhibited.html" class="link">LDAP::ResultError::ObjectClassModsProhibited</a><br />
+Class <a href="ResultError/ObjectClassViolation.html" class="link">LDAP::ResultError::ObjectClassViolation</a><br />
+Class <a href="ResultError/OperationsError.html" class="link">LDAP::ResultError::OperationsError</a><br />
+Class <a href="ResultError/Other.html" class="link">LDAP::ResultError::Other</a><br />
+Class <a href="ResultError/ProtocolError.html" class="link">LDAP::ResultError::ProtocolError</a><br />
+Class <a href="ResultError/Referral.html" class="link">LDAP::ResultError::Referral</a><br />
+Class <a href="ResultError/SaslBindInProgress.html" class="link">LDAP::ResultError::SaslBindInProgress</a><br />
+Class <a href="ResultError/SizeLimitExceeded.html" class="link">LDAP::ResultError::SizeLimitExceeded</a><br />
+Class <a href="ResultError/StrongAuthRequired.html" class="link">LDAP::ResultError::StrongAuthRequired</a><br />
+Class <a href="ResultError/Success.html" class="link">LDAP::ResultError::Success</a><br />
+Class <a href="ResultError/TimeLimitExceeded.html" class="link">LDAP::ResultError::TimeLimitExceeded</a><br />
+Class <a href="ResultError/Unavailable.html" class="link">LDAP::ResultError::Unavailable</a><br />
+Class <a href="ResultError/UnavailableCriticalExtension.html" class="link">LDAP::ResultError::UnavailableCriticalExtension</a><br />
+Class <a href="ResultError/UndefinedAttributeType.html" class="link">LDAP::ResultError::UndefinedAttributeType</a><br />
+Class <a href="ResultError/UnwillingToPerform.html" class="link">LDAP::ResultError::UnwillingToPerform</a><br />
+
+    </div>
+
+    <div id="constants-list">
+      <h3 class="section-bar">Constants</h3>
+
+      <div class="name-list">
+        <table summary="Constants">
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">N_TO_CLASS</td>
+          <td>=</td>
+          <td class="context-item-value">{     53 =&gt; UnwillingToPerform,     # FIXME: please fill in the rest   }</td>
+          <td width="3em">&nbsp;</td>
+          <td class="context-item-desc">
+Reverse lookup: so you can do raise <a
+href="ResultError.html">LDAP::ResultError</a>[53]
+
+</td>
+        </tr>
+        </table>
+      </div>
+    </div>
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000072" class="method-detail">
+        <a name="M000072"></a>
+
+        <div class="method-heading">
+          <a href="ResultError.src/M000072.html" target="Code" class="method-signature"
+            onclick="popupCode('ResultError.src/M000072.html');return false;">
+          <span class="method-name">[]</span><span class="method-args">(n)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

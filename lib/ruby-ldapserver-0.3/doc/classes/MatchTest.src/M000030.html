@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>test_from_def (MatchTest)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-match.rb, line 52</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_from_def</span>
+    <span class="ruby-identifier">s</span> = <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">MatchingRule</span>.<span class="ruby-identifier">from_def</span>(<span class="ruby-value str">&quot;( 1.2.3 NAME ( 'wibble' 'bibble' ) DESC 'foobar' SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )&quot;</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;1.2.3&quot;</span>, <span class="ruby-identifier">s</span>.<span class="ruby-identifier">oid</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-value str">'wibble'</span>,<span class="ruby-value str">'bibble'</span>], <span class="ruby-identifier">s</span>.<span class="ruby-identifier">names</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">'wibble'</span>, <span class="ruby-identifier">s</span>.<span class="ruby-identifier">to_s</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;foobar&quot;</span>, <span class="ruby-identifier">s</span>.<span class="ruby-identifier">desc</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value str">&quot;IA5 String&quot;</span>, <span class="ruby-identifier">s</span>.<span class="ruby-identifier">syntax</span>.<span class="ruby-identifier">desc</span>)
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

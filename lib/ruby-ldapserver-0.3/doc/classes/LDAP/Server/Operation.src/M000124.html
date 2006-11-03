@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>send_SearchResultEntry (LDAP::Server::Operation)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/operation.rb, line 101</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">send_SearchResultEntry</span>(<span class="ruby-identifier">dn</span>, <span class="ruby-identifier">avs</span>, <span class="ruby-identifier">opt</span>={})
+      <span class="ruby-ivar">@rescount</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@sizelimit</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">SizeLimitExceeded</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@rescount</span> <span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@sizelimit</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@schema</span>
+        <span class="ruby-comment cmt"># normalize the attribute names</span>
+        <span class="ruby-ivar">@attributes</span> = <span class="ruby-ivar">@attributes</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@schema</span>.<span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">a</span>).<span class="ruby-identifier">to_s</span> }
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-identifier">sendall</span> = <span class="ruby-ivar">@attributes</span> <span class="ruby-operator">==</span> [] <span class="ruby-operator">||</span> <span class="ruby-ivar">@attributes</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-value str">&quot;*&quot;</span>)
+      <span class="ruby-identifier">avseq</span> = []
+
+      <span class="ruby-identifier">avs</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attr</span>, <span class="ruby-identifier">vals</span><span class="ruby-operator">|</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@attributes</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">attr</span>)
+          <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">sendall</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@schema</span>
+            <span class="ruby-identifier">a</span> = <span class="ruby-ivar">@schema</span>.<span class="ruby-identifier">find_attrtype</span>(<span class="ruby-identifier">attr</span>)
+            <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">a</span> <span class="ruby-keyword kw">and</span> (<span class="ruby-identifier">a</span>.<span class="ruby-identifier">usage</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">usage</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:userApplications</span>)
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+
+        <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@typesOnly</span>
+          <span class="ruby-identifier">vals</span> = [] 
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">vals</span> = [<span class="ruby-identifier">vals</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">vals</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Array</span>)
+          <span class="ruby-comment cmt"># FIXME: optionally do a value_to_s conversion here?</span>
+          <span class="ruby-comment cmt"># FIXME: handle attribute;binary</span>
+        <span class="ruby-keyword kw">end</span>
+
+        <span class="ruby-identifier">avseq</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">Sequence</span>([
+          <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">OctetString</span>(<span class="ruby-identifier">attr</span>),
+          <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">Set</span>(<span class="ruby-identifier">vals</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">OctetString</span>(<span class="ruby-identifier">v</span>.<span class="ruby-identifier">to_s</span>) })
+        ])
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-identifier">send_LDAPMessage</span>(<span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">Sequence</span>([
+          <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">OctetString</span>(<span class="ruby-identifier">dn</span>),
+          <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">Sequence</span>(<span class="ruby-identifier">avseq</span>),
+        ], <span class="ruby-value">4</span>, <span class="ruby-identifier">:IMPLICIT</span>, <span class="ruby-identifier">:APPLICATION</span>), <span class="ruby-identifier">opt</span>)
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>send_unsolicited_notification (LDAP::Server::Connection)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/connection.rb, line 241</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">send_unsolicited_notification</span>(<span class="ruby-identifier">resultCode</span>, <span class="ruby-identifier">opt</span>={})
+      <span class="ruby-identifier">protocolOp</span> = [
+        <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">Enumerated</span>(<span class="ruby-identifier">resultCode</span>),
+        <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">OctetString</span>(<span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:matchedDN</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>),
+        <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">OctetString</span>(<span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:errorMessage</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>),
+      ]
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:referral</span>]
+        <span class="ruby-identifier">rs</span> = <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:referral</span>].<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">r</span><span class="ruby-operator">|</span> <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">OctetString</span>(<span class="ruby-identifier">r</span>) }
+        <span class="ruby-identifier">protocolOp</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">Sequence</span>(<span class="ruby-identifier">rs</span>, <span class="ruby-value">3</span>, <span class="ruby-identifier">:IMPLICIT</span>, <span class="ruby-identifier">:APPLICATION</span>)
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:responseName</span>]
+        <span class="ruby-identifier">protocolOp</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">OctetString</span>(<span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:responseName</span>], <span class="ruby-value">10</span>, <span class="ruby-identifier">:IMPLICIT</span>, <span class="ruby-identifier">:APPLICATION</span>)
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:response</span>]
+        <span class="ruby-identifier">protocolOp</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">OctetString</span>(<span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:response</span>], <span class="ruby-value">11</span>, <span class="ruby-identifier">:IMPLICIT</span>, <span class="ruby-identifier">:APPLICATION</span>)
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-identifier">message</span> = [
+        <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">Integer</span>(<span class="ruby-value">0</span>),
+        <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">Sequence</span>(<span class="ruby-identifier">protocolOp</span>, <span class="ruby-value">24</span>, <span class="ruby-identifier">:IMPLICIT</span>, <span class="ruby-identifier">:APPLICATION</span>),
+      ]
+      <span class="ruby-identifier">message</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:controls</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:controls</span>]
+      <span class="ruby-identifier">write</span>(<span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">Sequence</span>(<span class="ruby-identifier">message</span>).<span class="ruby-identifier">to_der</span>)
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>do_child (TestLdap)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-encoding.rb, line 103</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">do_child</span>
+    <span class="ruby-keyword kw">while</span> <span class="ruby-keyword kw">true</span>
+      <span class="ruby-keyword kw">begin</span>
+        <span class="ruby-identifier">a</span> = <span class="ruby-identifier">gets</span>.<span class="ruby-identifier">chomp</span>
+        <span class="ruby-identifier">conn</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Conn</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">HOST</span>,<span class="ruby-constant">PORT</span>)
+        <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">a</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;bind2&quot;</span>
+          <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">set_option</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_OPT_PROTOCOL_VERSION</span>, <span class="ruby-value">2</span>)
+          <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">bind</span>(<span class="ruby-value str">&quot;foo&quot;</span>,<span class="ruby-value str">&quot;bar&quot;</span>)
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;bind3&quot;</span>
+          <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">set_option</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_OPT_PROTOCOL_VERSION</span>, <span class="ruby-value">3</span>)
+          <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">bind</span>(<span class="ruby-value str">&quot;foo&quot;</span>,<span class="ruby-value str">&quot;bar&quot;</span>)
+        <span class="ruby-comment cmt"># these examples taken from the ruby-ldap examples</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;add1&quot;</span>
+          <span class="ruby-identifier">entry1</span> = [
+            <span class="ruby-constant">LDAP</span>.<span class="ruby-identifier">mod</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_MOD_ADD</span>, <span class="ruby-value str">'objectclass'</span>, [<span class="ruby-value str">'top'</span>, <span class="ruby-value str">'domain'</span>]),
+            <span class="ruby-constant">LDAP</span>.<span class="ruby-identifier">mod</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_MOD_ADD</span>, <span class="ruby-value str">'o'</span>, [<span class="ruby-value str">'TTSKY.NET'</span>]),
+            <span class="ruby-constant">LDAP</span>.<span class="ruby-identifier">mod</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_MOD_ADD</span>, <span class="ruby-value str">'dc'</span>, [<span class="ruby-value str">'localhost'</span>]),
+          ]
+          <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">add</span>(<span class="ruby-value str">&quot;dc=localhost, dc=domain&quot;</span>, <span class="ruby-identifier">entry1</span>)
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;add2&quot;</span>
+          <span class="ruby-identifier">entry2</span> = [
+            <span class="ruby-constant">LDAP</span>.<span class="ruby-identifier">mod</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_MOD_ADD</span>, <span class="ruby-value str">'objectclass'</span>, [<span class="ruby-value str">'top'</span>, <span class="ruby-value str">'person'</span>]),
+            <span class="ruby-constant">LDAP</span>.<span class="ruby-identifier">mod</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_MOD_ADD</span>, <span class="ruby-value str">'cn'</span>, [<span class="ruby-value str">'Takaaki Tateishi'</span>]),
+            <span class="ruby-constant">LDAP</span>.<span class="ruby-identifier">mod</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_MOD_ADD</span> <span class="ruby-operator">|</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_MOD_BVALUES</span>, <span class="ruby-value str">'sn'</span>, [<span class="ruby-value str">'ttate'</span>,<span class="ruby-value str">'Tateishi'</span>, <span class="ruby-value str">&quot;zero\000zero&quot;</span>]),
+          ]
+          <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">add</span>(<span class="ruby-value str">&quot;cn=Takaaki Tateishi, dc=localhost, dc=localdomain&quot;</span>, <span class="ruby-identifier">entry2</span>)
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;del&quot;</span>
+          <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;cn=Takaaki-Tateishi, dc=localhost, dc=localdomain&quot;</span>)
+        <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/^compare (.*)/</span>
+          <span class="ruby-keyword kw">begin</span>
+            <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">compare</span>(<span class="ruby-value str">&quot;cn=Takaaki Tateishi, dc=localhost, dc=localdomain&quot;</span>,
+                         <span class="ruby-value str">&quot;cn&quot;</span>, <span class="ruby-identifier">$1</span>)
+            <span class="ruby-keyword kw">when</span> <span class="ruby-keyword kw">true</span>; <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;OK true&quot;</span>; <span class="ruby-keyword kw">next</span>
+            <span class="ruby-keyword kw">when</span> <span class="ruby-keyword kw">false</span>; <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;OK false&quot;</span>; <span class="ruby-keyword kw">next</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+            <span class="ruby-comment cmt"># For older versions of ruby-ldap</span>
+            <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>
+            <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/Compare True/i</span>; <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;OK true&quot;</span>; <span class="ruby-keyword kw">next</span>
+            <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/Compare False/i</span>; <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;OK false&quot;</span>; <span class="ruby-keyword kw">next</span>
+            <span class="ruby-keyword kw">end</span>
+            <span class="ruby-identifier">raise</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;modrdn&quot;</span>
+          <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">modrdn</span>(<span class="ruby-value str">&quot;cn=Takaaki Tateishi, dc=localhost, dc=localdomain&quot;</span>,
+                      <span class="ruby-value str">&quot;cn=Takaaki-Tateishi&quot;</span>,
+                      <span class="ruby-keyword kw">true</span>)
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;modify&quot;</span>
+          <span class="ruby-identifier">entry</span> = [
+            <span class="ruby-constant">LDAP</span>.<span class="ruby-identifier">mod</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_MOD_ADD</span>, <span class="ruby-value str">'objectclass'</span>, [<span class="ruby-value str">'top'</span>, <span class="ruby-value str">'domain'</span>]),
+            <span class="ruby-constant">LDAP</span>.<span class="ruby-identifier">mod</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_MOD_DELETE</span>, <span class="ruby-value str">'o'</span>, []),
+            <span class="ruby-constant">LDAP</span>.<span class="ruby-identifier">mod</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_MOD_REPLACE</span>, <span class="ruby-value str">'dc'</span>, [<span class="ruby-value str">'localhost'</span>]),
+          ]
+          <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">modify</span>(<span class="ruby-value str">&quot;dc=localhost, dc=domain&quot;</span>, <span class="ruby-identifier">entry</span>)
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;search&quot;</span>
+          <span class="ruby-identifier">res</span> = {}
+          <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">search</span>(<span class="ruby-value str">&quot;dc=localhost, dc=localdomain&quot;</span>,
+                      <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_SCOPE_SUBTREE</span>,
+                      <span class="ruby-value str">&quot;(objectclass=*)&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span>
+            <span class="ruby-identifier">entry</span> = <span class="ruby-identifier">e</span>.<span class="ruby-identifier">to_hash</span>
+            <span class="ruby-identifier">dn</span> = <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;dn&quot;</span>).<span class="ruby-identifier">first</span>
+            <span class="ruby-identifier">res</span>[<span class="ruby-identifier">dn</span>] = <span class="ruby-identifier">entry</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">exp</span> = {
+            <span class="ruby-value str">&quot;cn=foo&quot;</span> =<span class="ruby-operator">&gt;</span> {<span class="ruby-value str">&quot;a&quot;</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">&quot;1&quot;</span>,<span class="ruby-value str">&quot;2&quot;</span>], <span class="ruby-value str">&quot;b&quot;</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">&quot;boing&quot;</span>]},
+            <span class="ruby-value str">&quot;cn=bar&quot;</span> =<span class="ruby-operator">&gt;</span> {<span class="ruby-value str">&quot;a&quot;</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">&quot;3&quot;</span>,<span class="ruby-value str">&quot;4&quot;</span>,<span class="ruby-value str">&quot;5&quot;</span>], <span class="ruby-value str">&quot;b&quot;</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">&quot;wibble&quot;</span>]},
+          }
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">res</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">exp</span>
+            <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Bad Search Result, expected\n#{exp.inspect}\ngot\n#{res.inspect}&quot;</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;search2&quot;</span>
+          <span class="ruby-comment cmt"># FIXME: ruby-ldap doesn't seem to allow DEREF options to be set</span>
+          <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">search</span>(<span class="ruby-value str">&quot;dc=localhost, dc=localdomain&quot;</span>,
+                      <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">LDAP_SCOPE_BASE</span>,
+                      <span class="ruby-value str">&quot;(&amp;(cn=foo)(objectclass=*)(|(!(sn=*))(ou&gt;=baz)(o&lt;=z)(cn~=brian)(cn=*and*er)))&quot;</span>,
+                      [<span class="ruby-value str">&quot;a&quot;</span>,<span class="ruby-value str">&quot;b&quot;</span>]) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span>
+            <span class="ruby-identifier">entry</span> = <span class="ruby-identifier">e</span>.<span class="ruby-identifier">to_hash</span>
+            <span class="ruby-identifier">dn</span> = <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;dn&quot;</span>).<span class="ruby-identifier">first</span>
+            <span class="ruby-identifier">res</span>[<span class="ruby-identifier">dn</span>] = <span class="ruby-identifier">entry</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;quit&quot;</span>
+          <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;OK&quot;</span>
+          <span class="ruby-keyword kw">break</span>
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Bad command! #{a.inspect}&quot;</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;OK&quot;</span>
+      <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+        <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Child exception: #{e}\n\t#{e.backtrace.join(&quot;\n\t&quot;)}&quot;</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;ERR #{e}&quot;</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

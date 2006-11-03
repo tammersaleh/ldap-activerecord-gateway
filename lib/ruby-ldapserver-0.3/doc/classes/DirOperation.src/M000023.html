@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>add (DirOperation)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File examples/rbslapd3.rb, line 111</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add</span>(<span class="ruby-identifier">dn</span>, <span class="ruby-identifier">entry</span>)
+    <span class="ruby-identifier">entry</span> = <span class="ruby-ivar">@schema</span>.<span class="ruby-identifier">validate</span>(<span class="ruby-identifier">entry</span>)
+    <span class="ruby-identifier">entry</span>[<span class="ruby-value str">'createTimestamp'</span>] = [<span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">gmtime</span>.<span class="ruby-identifier">strftime</span>(<span class="ruby-value str">&quot;%Y%m%d%H%MZ&quot;</span>)]
+    <span class="ruby-identifier">entry</span>[<span class="ruby-value str">'creatorsName'</span>] = [<span class="ruby-ivar">@connection</span>.<span class="ruby-identifier">binddn</span>.<span class="ruby-identifier">to_s</span>]
+    <span class="ruby-comment cmt"># FIXME: normalize the DN and check it's below our root DN</span>
+    <span class="ruby-comment cmt"># FIXME: validate that a superior object exists</span>
+    <span class="ruby-comment cmt"># FIXME: validate that entry contains the RDN attribute (yuk)</span>
+    <span class="ruby-identifier">dn</span>.<span class="ruby-identifier">downcase!</span>
+    <span class="ruby-ivar">@dir</span>.<span class="ruby-identifier">lock</span> <span class="ruby-keyword kw">do</span>
+      <span class="ruby-ivar">@dir</span>.<span class="ruby-identifier">update</span>
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">EntryAlreadyExists</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@dir</span>.<span class="ruby-identifier">data</span>[<span class="ruby-identifier">dn</span>]
+      <span class="ruby-ivar">@dir</span>.<span class="ruby-identifier">data</span>[<span class="ruby-identifier">dn</span>] = <span class="ruby-identifier">entry</span>
+      <span class="ruby-ivar">@dir</span>.<span class="ruby-identifier">write</span>
+    <span class="ruby-keyword kw">end</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

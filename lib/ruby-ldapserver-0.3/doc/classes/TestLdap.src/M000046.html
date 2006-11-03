@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>test_search (TestLdap)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-encoding.rb, line 264</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_search</span>
+    <span class="ruby-identifier">req</span>(<span class="ruby-value str">&quot;search&quot;</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-identifier">:search</span>, <span class="ruby-value str">&quot;dc=localhost, dc=localdomain&quot;</span>,
+      <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">WholeSubtree</span>,
+      <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">NeverDerefAliases</span>,
+      [<span class="ruby-identifier">:true</span>], []], <span class="ruby-constant">MockOperation</span>.<span class="ruby-identifier">lastop</span>)
+    <span class="ruby-identifier">req</span>(<span class="ruby-value str">&quot;search2&quot;</span>)
+    <span class="ruby-identifier">assert_equal</span>([<span class="ruby-identifier">:search</span>, <span class="ruby-value str">&quot;dc=localhost, dc=localdomain&quot;</span>,
+      <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">BaseObject</span>,
+      <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span><span class="ruby-operator">::</span><span class="ruby-constant">NeverDerefAliases</span>,
+      [<span class="ruby-identifier">:and</span>, [<span class="ruby-identifier">:eq</span>, <span class="ruby-value str">&quot;cn&quot;</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-value str">&quot;foo&quot;</span>],
+             [<span class="ruby-identifier">:or</span>,  [<span class="ruby-identifier">:not</span>, [<span class="ruby-identifier">:present</span>, <span class="ruby-value str">&quot;sn&quot;</span>]],
+                    [<span class="ruby-identifier">:ge</span>, <span class="ruby-value str">&quot;ou&quot;</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-value str">&quot;baz&quot;</span>],
+                    [<span class="ruby-identifier">:le</span>, <span class="ruby-value str">&quot;o&quot;</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-value str">&quot;z&quot;</span>],
+                    [<span class="ruby-identifier">:approx</span>, <span class="ruby-value str">&quot;cn&quot;</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-value str">&quot;brian&quot;</span>],
+                    [<span class="ruby-identifier">:substrings</span>, <span class="ruby-value str">&quot;cn&quot;</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-value str">&quot;and&quot;</span>, <span class="ruby-value str">&quot;er&quot;</span>],
+             ],
+      ], [<span class="ruby-value str">&quot;a&quot;</span>,<span class="ruby-value str">&quot;b&quot;</span>]], <span class="ruby-constant">MockOperation</span>.<span class="ruby-identifier">lastop</span>)
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

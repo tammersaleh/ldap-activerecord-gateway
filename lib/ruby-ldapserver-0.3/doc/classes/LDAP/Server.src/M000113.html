@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>preforkserver (LDAP::Server)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/preforkserver.rb, line 24</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">preforkserver</span>(<span class="ruby-identifier">opt</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">blk</span>)
+    <span class="ruby-identifier">logger</span> = <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:logger</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">$stderr</span>
+    <span class="ruby-identifier">server</span> = <span class="ruby-constant">PreFork</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:bindaddr</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;0.0.0.0&quot;</span>, <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:port</span>])
+
+    <span class="ruby-comment cmt"># Drop privileges if requested</span>
+    <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:group</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:user</span>]
+      <span class="ruby-identifier">require</span> <span class="ruby-value str">'etc'</span>
+      <span class="ruby-identifier">gid</span> = <span class="ruby-constant">Etc</span>.<span class="ruby-identifier">getgrnam</span>(<span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:group</span>]).<span class="ruby-identifier">gid</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:group</span>]
+      <span class="ruby-identifier">uid</span> = <span class="ruby-constant">Etc</span>.<span class="ruby-identifier">getpwnam</span>(<span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:user</span>]).<span class="ruby-identifier">uid</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:user</span>]
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">chown</span>(<span class="ruby-identifier">uid</span>, <span class="ruby-identifier">gid</span>, <span class="ruby-identifier">server</span>.<span class="ruby-identifier">instance_eval</span> {<span class="ruby-ivar">@lockf</span>})
+      <span class="ruby-constant">Process</span>.<span class="ruby-identifier">gid</span> = <span class="ruby-constant">Process</span>.<span class="ruby-identifier">egid</span> = <span class="ruby-identifier">gid</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">gid</span>
+      <span class="ruby-constant">Process</span>.<span class="ruby-identifier">uid</span> = <span class="ruby-constant">Process</span>.<span class="ruby-identifier">euid</span> = <span class="ruby-identifier">uid</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">uid</span>
+    <span class="ruby-keyword kw">end</span>
+
+    <span class="ruby-comment cmt"># Typically the O/S will buffer response data for 100ms before sending.</span>
+    <span class="ruby-comment cmt"># If the response is sent as a single write() then there's no need for it.</span>
+    <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:nodelay</span>]
+      <span class="ruby-keyword kw">begin</span>
+        <span class="ruby-identifier">server</span>.<span class="ruby-identifier">sock</span>.<span class="ruby-identifier">setsockopt</span>(<span class="ruby-constant">Socket</span><span class="ruby-operator">::</span><span class="ruby-constant">IPPROTO_TCP</span>, <span class="ruby-constant">Socket</span><span class="ruby-operator">::</span><span class="ruby-constant">TCP_NODELAY</span>, <span class="ruby-value">1</span>)
+      <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># set queue size for incoming connections (default is 5)</span>
+    <span class="ruby-identifier">server</span>.<span class="ruby-identifier">sock</span>.<span class="ruby-identifier">listen</span>(<span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:listen</span>]) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:listen</span>]
+
+    <span class="ruby-comment cmt"># Set prefork server parameters</span>
+    <span class="ruby-identifier">server</span>.<span class="ruby-identifier">min_servers</span> = <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:min_servers</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:min_servers</span>]
+    <span class="ruby-identifier">server</span>.<span class="ruby-identifier">max_servers</span> = <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:max_servers</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:max_servers</span>]
+    <span class="ruby-identifier">server</span>.<span class="ruby-identifier">max_request_per_child</span> = <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:max_request_per_child</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:max_request_per_child</span>]
+    <span class="ruby-identifier">server</span>.<span class="ruby-identifier">max_idle</span> = <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:max_idle</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:max_idle</span>]
+
+    <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword kw">do</span>
+      <span class="ruby-identifier">server</span>.<span class="ruby-identifier">start</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span>
+        <span class="ruby-keyword kw">begin</span>
+          <span class="ruby-identifier">s</span>.<span class="ruby-identifier">instance_eval</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">blk</span>)
+        <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Interrupt</span>
+          <span class="ruby-comment cmt"># This exception can be raised to shut the server down</span>
+          <span class="ruby-identifier">server</span>.<span class="ruby-identifier">stop</span>
+        <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+          <span class="ruby-identifier">logger</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;[#{s.peeraddr[3]}]: #{e}: #{e.backtrace[0]}\n&quot;</span>
+        <span class="ruby-keyword kw">ensure</span>
+          <span class="ruby-identifier">s</span>.<span class="ruby-identifier">close</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

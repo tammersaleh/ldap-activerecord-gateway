@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>handle_requests (LDAP::Server::Connection)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/ldap/server/connection.rb, line 84</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">handle_requests</span>
+      <span class="ruby-identifier">operationClass</span> = <span class="ruby-ivar">@opt</span>[<span class="ruby-identifier">:operation_class</span>]
+      <span class="ruby-identifier">ocArgs</span> = <span class="ruby-ivar">@opt</span>[<span class="ruby-identifier">:operation_args</span>] <span class="ruby-operator">||</span> []
+      <span class="ruby-identifier">catch</span>(<span class="ruby-identifier">:close</span>) <span class="ruby-keyword kw">do</span>
+        <span class="ruby-keyword kw">while</span> <span class="ruby-keyword kw">true</span>
+          <span class="ruby-keyword kw">begin</span>
+            <span class="ruby-identifier">blk</span> = <span class="ruby-identifier">ber_read</span>(<span class="ruby-ivar">@io</span>)
+            <span class="ruby-identifier">asn1</span> = <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-identifier">decode</span>(<span class="ruby-identifier">blk</span>)
+            <span class="ruby-comment cmt"># Debugging:</span>
+            <span class="ruby-comment cmt"># puts &quot;Request: #{blk.unpack(&quot;H*&quot;)}\n#{asn1.inspect}&quot; if $debug</span>
+
+            <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ProtocolError</span>, <span class="ruby-value str">&quot;LDAPMessage must be SEQUENCE&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">Sequence</span>)
+            <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ProtocolError</span>, <span class="ruby-value str">&quot;Bad Message ID&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">Integer</span>)
+            <span class="ruby-identifier">messageId</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">value</span>
+
+            <span class="ruby-identifier">protocolOp</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">1</span>]
+            <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ProtocolError</span>, <span class="ruby-value str">&quot;Bad protocolOp&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">protocolOp</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1Data</span>)
+            <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ProtocolError</span>, <span class="ruby-value str">&quot;Bad protocolOp tag class&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">protocolOp</span>.<span class="ruby-identifier">tag_class</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:APPLICATION</span>
+
+            <span class="ruby-comment cmt"># controls are not properly implemented</span>
+            <span class="ruby-identifier">c</span> = <span class="ruby-identifier">asn1</span>.<span class="ruby-identifier">value</span>[<span class="ruby-value">2</span>]
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1Data</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">tag_class</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:APPLICATION</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">tag</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+              <span class="ruby-identifier">controls</span> = <span class="ruby-identifier">c</span>.<span class="ruby-identifier">value</span>
+            <span class="ruby-keyword kw">end</span>
+
+            <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">protocolOp</span>.<span class="ruby-identifier">tag</span>
+            <span class="ruby-keyword kw">when</span> <span class="ruby-value">0</span> <span class="ruby-comment cmt"># BindRequest</span>
+              <span class="ruby-identifier">abandon_all</span>
+              <span class="ruby-ivar">@binddn</span>, <span class="ruby-ivar">@version</span> = <span class="ruby-identifier">operationClass</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>,<span class="ruby-identifier">messageId</span>,<span class="ruby-operator">*</span><span class="ruby-identifier">ocArgs</span>).
+                                  <span class="ruby-identifier">do_bind</span>(<span class="ruby-identifier">protocolOp</span>, <span class="ruby-identifier">controls</span>)
+
+            <span class="ruby-keyword kw">when</span> <span class="ruby-value">2</span> <span class="ruby-comment cmt"># UnbindRequest</span>
+              <span class="ruby-identifier">throw</span>(<span class="ruby-identifier">:close</span>)
+
+            <span class="ruby-keyword kw">when</span> <span class="ruby-value">3</span> <span class="ruby-comment cmt"># SearchRequest</span>
+              <span class="ruby-comment cmt"># Note: RFC 2251 4.4.4.1 says behaviour is undefined if</span>
+              <span class="ruby-comment cmt"># client sends an overlapping request with same message ID,</span>
+              <span class="ruby-comment cmt"># so we don't have to worry about the case where there is</span>
+              <span class="ruby-comment cmt"># already a thread with this id in @active_reqs.</span>
+              <span class="ruby-comment cmt"># However, to avoid a race we copy messageId/</span>
+              <span class="ruby-comment cmt"># protocolOp/controls into thread-local variables, because</span>
+              <span class="ruby-comment cmt"># they will change when the next request comes in.</span>
+              <span class="ruby-comment cmt">#</span>
+              <span class="ruby-comment cmt"># There is a theoretical race condition here: a client could</span>
+              <span class="ruby-comment cmt"># send an abandon request before Thread.current is assigned to</span>
+              <span class="ruby-comment cmt"># @active_reqs[thrm]. It's not a problem, because abandon isn't</span>
+              <span class="ruby-comment cmt"># guaranteed to work anyway. Doing it this way ensures that</span>
+              <span class="ruby-comment cmt"># @active_reqs does not leak memory on a long-lived connection.</span>
+
+              <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">messageId</span>,<span class="ruby-identifier">protocolOp</span>,<span class="ruby-identifier">controls</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">thrm</span>,<span class="ruby-identifier">thrp</span>,<span class="ruby-identifier">thrc</span><span class="ruby-operator">|</span>
+                <span class="ruby-keyword kw">begin</span>
+                  <span class="ruby-ivar">@active_reqs</span>[<span class="ruby-identifier">thrm</span>] = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+                  <span class="ruby-identifier">operationClass</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>,<span class="ruby-identifier">thrm</span>,<span class="ruby-operator">*</span><span class="ruby-identifier">ocArgs</span>).<span class="ruby-identifier">do_search</span>(<span class="ruby-identifier">thrp</span>, <span class="ruby-identifier">thrc</span>)
+                <span class="ruby-keyword kw">ensure</span>
+                  <span class="ruby-ivar">@active_reqs</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">thrm</span>)
+                <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">end</span>
+
+            <span class="ruby-keyword kw">when</span> <span class="ruby-value">6</span> <span class="ruby-comment cmt"># ModifyRequest</span>
+              <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">messageId</span>,<span class="ruby-identifier">protocolOp</span>,<span class="ruby-identifier">controls</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">thrm</span>,<span class="ruby-identifier">thrp</span>,<span class="ruby-identifier">thrc</span><span class="ruby-operator">|</span>
+                <span class="ruby-keyword kw">begin</span>
+                  <span class="ruby-ivar">@active_reqs</span>[<span class="ruby-identifier">thrm</span>] = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+                  <span class="ruby-identifier">operationClass</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>,<span class="ruby-identifier">thrm</span>,<span class="ruby-operator">*</span><span class="ruby-identifier">ocArgs</span>).<span class="ruby-identifier">do_modify</span>(<span class="ruby-identifier">thrp</span>, <span class="ruby-identifier">thrc</span>)
+                <span class="ruby-keyword kw">ensure</span>
+                  <span class="ruby-ivar">@active_reqs</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">thrm</span>)
+                <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">end</span>
+
+            <span class="ruby-keyword kw">when</span> <span class="ruby-value">8</span> <span class="ruby-comment cmt"># AddRequest</span>
+              <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">messageId</span>,<span class="ruby-identifier">protocolOp</span>,<span class="ruby-identifier">controls</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">thrm</span>,<span class="ruby-identifier">thrp</span>,<span class="ruby-identifier">thrc</span><span class="ruby-operator">|</span>
+                <span class="ruby-keyword kw">begin</span>
+                  <span class="ruby-ivar">@active_reqs</span>[<span class="ruby-identifier">thrm</span>] = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+                  <span class="ruby-identifier">operationClass</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>,<span class="ruby-identifier">thrm</span>,<span class="ruby-operator">*</span><span class="ruby-identifier">ocArgs</span>).<span class="ruby-identifier">do_add</span>(<span class="ruby-identifier">thrp</span>, <span class="ruby-identifier">thrc</span>)
+                <span class="ruby-keyword kw">ensure</span>
+                  <span class="ruby-ivar">@active_reqs</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">thrm</span>)
+                <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">end</span>
+
+            <span class="ruby-keyword kw">when</span> <span class="ruby-value">10</span> <span class="ruby-comment cmt"># DelRequest</span>
+              <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">messageId</span>,<span class="ruby-identifier">protocolOp</span>,<span class="ruby-identifier">controls</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">thrm</span>,<span class="ruby-identifier">thrp</span>,<span class="ruby-identifier">thrc</span><span class="ruby-operator">|</span>
+                <span class="ruby-keyword kw">begin</span>
+                  <span class="ruby-ivar">@active_reqs</span>[<span class="ruby-identifier">thrm</span>] = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+                  <span class="ruby-identifier">operationClass</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>,<span class="ruby-identifier">thrm</span>,<span class="ruby-operator">*</span><span class="ruby-identifier">ocArgs</span>).<span class="ruby-identifier">do_del</span>(<span class="ruby-identifier">thrp</span>, <span class="ruby-identifier">thrc</span>)
+                <span class="ruby-keyword kw">ensure</span>
+                  <span class="ruby-ivar">@active_reqs</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">thrm</span>)
+                <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">end</span>
+
+            <span class="ruby-keyword kw">when</span> <span class="ruby-value">12</span> <span class="ruby-comment cmt"># ModifyDNRequest</span>
+              <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">messageId</span>,<span class="ruby-identifier">protocolOp</span>,<span class="ruby-identifier">controls</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">thrm</span>,<span class="ruby-identifier">thrp</span>,<span class="ruby-identifier">thrc</span><span class="ruby-operator">|</span>
+                <span class="ruby-keyword kw">begin</span>
+                  <span class="ruby-ivar">@active_reqs</span>[<span class="ruby-identifier">thrm</span>] = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+                  <span class="ruby-identifier">operationClass</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>,<span class="ruby-identifier">thrm</span>,<span class="ruby-operator">*</span><span class="ruby-identifier">ocArgs</span>).<span class="ruby-identifier">do_modifydn</span>(<span class="ruby-identifier">thrp</span>, <span class="ruby-identifier">thrc</span>)
+                <span class="ruby-keyword kw">ensure</span>
+                  <span class="ruby-ivar">@active_reqs</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">thrm</span>)
+                <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">end</span>
+
+            <span class="ruby-keyword kw">when</span> <span class="ruby-value">14</span> <span class="ruby-comment cmt"># CompareRequest</span>
+              <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">messageId</span>,<span class="ruby-identifier">protocolOp</span>,<span class="ruby-identifier">controls</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">thrm</span>,<span class="ruby-identifier">thrp</span>,<span class="ruby-identifier">thrc</span><span class="ruby-operator">|</span>
+                <span class="ruby-keyword kw">begin</span>
+                  <span class="ruby-ivar">@active_reqs</span>[<span class="ruby-identifier">thrm</span>] = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+                  <span class="ruby-identifier">operationClass</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>,<span class="ruby-identifier">thrm</span>,<span class="ruby-operator">*</span><span class="ruby-identifier">ocArgs</span>).<span class="ruby-identifier">do_compare</span>(<span class="ruby-identifier">thrp</span>, <span class="ruby-identifier">thrc</span>)
+                <span class="ruby-keyword kw">ensure</span>
+                  <span class="ruby-ivar">@active_reqs</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">thrm</span>)
+                <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">end</span>
+
+            <span class="ruby-keyword kw">when</span> <span class="ruby-value">16</span> <span class="ruby-comment cmt"># AbandonRequest</span>
+              <span class="ruby-identifier">abandon</span>(<span class="ruby-identifier">protocolOp</span>.<span class="ruby-identifier">value</span>)
+
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-identifier">raise</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ProtocolError</span>, <span class="ruby-node">&quot;Unrecognised protocolOp tag #{protocolOp.tag}&quot;</span>
+            <span class="ruby-keyword kw">end</span>
+
+          <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ProtocolError</span>, <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1</span><span class="ruby-operator">::</span><span class="ruby-constant">ASN1Error</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+            <span class="ruby-identifier">send_notice_of_disconnection</span>(<span class="ruby-constant">LDAP</span><span class="ruby-operator">::</span><span class="ruby-constant">ResultError</span><span class="ruby-operator">::</span><span class="ruby-constant">ProtocolError</span>.<span class="ruby-identifier">new</span>.<span class="ruby-identifier">to_i</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>)
+            <span class="ruby-identifier">throw</span>(<span class="ruby-identifier">:close</span>)
+
+          <span class="ruby-comment cmt"># all other exceptions propagate up and are caught by tcpserver</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-identifier">abandon_all</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

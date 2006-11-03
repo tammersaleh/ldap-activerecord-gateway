@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>search (MockOperation)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/test-encoding.rb, line 32</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">search</span>(<span class="ruby-identifier">basedn</span>, <span class="ruby-identifier">scope</span>, <span class="ruby-identifier">deref</span>, <span class="ruby-identifier">filter</span>)
+    <span class="ruby-ivar">@@lastop</span> = [<span class="ruby-identifier">:search</span>, <span class="ruby-identifier">basedn</span>, <span class="ruby-identifier">scope</span>, <span class="ruby-identifier">deref</span>, <span class="ruby-identifier">filter</span>, <span class="ruby-ivar">@attributes</span>]
+    <span class="ruby-identifier">send_SearchResultEntry</span>(<span class="ruby-value str">&quot;cn=foo&quot;</span>, {<span class="ruby-value str">&quot;a&quot;</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">&quot;1&quot;</span>,<span class="ruby-value str">&quot;2&quot;</span>], <span class="ruby-value str">&quot;b&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;boing&quot;</span>})
+    <span class="ruby-identifier">send_SearchResultEntry</span>(<span class="ruby-value str">&quot;cn=bar&quot;</span>, {<span class="ruby-value str">&quot;a&quot;</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-value str">&quot;3&quot;</span>,<span class="ruby-value str">&quot;4&quot;</span>,<span class="ruby-value str">&quot;5&quot;</span>], <span class="ruby-value str">&quot;b&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">&quot;wibble&quot;</span>})
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>
