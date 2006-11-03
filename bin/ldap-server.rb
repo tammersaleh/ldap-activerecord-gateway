@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-$debug = false # Server complains without this set.
+$debug = false
 
 MYNAME = File.basename(__FILE__)
 
@@ -22,6 +22,7 @@ end
 
 require "#{@config["rails_dir"]}/config/environment.rb"
 @config.symbolize_keys!
+$debug = @config[:debug]
 
 # Just to be sure.
 raise RuntimeError, "Cannot load rails." unless defined? RAILS_ENV
@@ -66,32 +67,44 @@ class ActiveRecordOperation < LDAP::Server::Operation
       raise LDAP::ResultError::UnwillingToPerform, "This query is way too complex: #{filter.inspect}"
     end
     
-    query_string = filter[1][4]
-      
-    unless (filter[1..4].transpose[4] == ([query_string] * 4))
+    # Different address books put the string in different places.  How fun.
+    if    (query_string = filter[1][5])
+      query_index = 5
+    elsif (query_string = filter[1][4])
+      query_index = 4
+    elsif (query_string = filter[1][3])
+      query_index = 3
+    end
+    
+    if !query_string
+      @logger.info "Refusing to respond to blank query string."
+      raise LDAP::ResultError::UnwillingToPerform, "Refusing to respond to blank query string: #{filter.inspect}"
+    end
+
+    if (filter[1..4].transpose[query_index] != ([query_string] * 4)) 
       @logger.info "Denying complex query (error 2)"
       raise LDAP::ResultError::UnwillingToPerform, "Seriously, I can only handle simple queries: #{filter.inspect}"
     end
 
-    @logger.debug "Running #{@ar_class.name}.search(#{query_string})"
+    @logger.debug "Running #{@ar_class.name}.search(\"#{query_string}\")"
     begin
       @records = @ar_class.search(query_string)
     rescue
       @logger.error "ERROR running #{@ar_class.name}.search(#{query_string}): #{$!}"
       raise LDAP::ResultError::OperationsError, "Error encountered during processing."
     end 
-    begin
       @logger.info "Returning #{@records.size} records matching \"#{query_string}\"."
       @records.each do |record|
+      begin
         ret = record.to_ldap_entry
-        ret_basedn = "uid=#{ret["uid"]},#{@config[:basedn]}"
-        @logger.debug "Sending #{ret_basedn} - #{ret.inspect}" 
-        send_SearchResultEntry(ret_basedn, ret)
+      rescue
+        @logger.error "ERROR converting AR instance to ldap entry: #{$!}"
+        raise LDAP::ResultError::OperationsError, "Error encountered during processing."
+      end      
+      ret_basedn = "uid=#{ret["uid"]},#{@config[:basedn]}"
+      @logger.debug "Sending #{ret_basedn} - #{ret.inspect}" 
+      send_SearchResultEntry(ret_basedn, ret)
       end
-    rescue
-      @logger.error "ERROR converting AR instance to ldap entry: #{$!}"
-      raise LDAP::ResultError::OperationsError, "Error encountered during processing."
-    end      
   end
 end
 
@@ -137,7 +150,9 @@ def start
   fork do
     Process.setsid
     exit if fork
-
+    
+    # This is to ensure thread-safety
+    ActiveRecord::Base.allow_concurrency = true 
     klass = @config[:active_record_model].constantize
     @logger.info "Access to #{klass.count} #{@config[:active_record_model]} records"
 
