@@ -27,9 +27,9 @@ require "#{@config["rails_dir"]}/config/environment.rb"
 raise RuntimeError, "Cannot load rails." unless defined? RAILS_ENV
 
 class ActiveRecordOperation < LDAP::Server::Operation
-  def initialize(connection, messageID, config_hash, logger)
+  def initialize(connection, messageID, config_hash, ar_class, logger)
     @config = config_hash
-    @ar_class = @config[:active_record_model].constantize
+    @ar_class = ar_class
     @logger = logger
     @logger.debug "Received connection request (#{messageID})."
     super(connection, messageID)
@@ -134,11 +134,12 @@ def start
   end
 
   @logger.info "Starting LDAP server on port #{@config[:port]}."
-  @logger.info "Access to #{@config[:active_record_model].constantize.count} #{@config[:active_record_model]} records"
-
   fork do
     Process.setsid
     exit if fork
+
+    klass = @config[:active_record_model].constantize
+    @logger.info "Access to #{klass.count} #{@config[:active_record_model]} records"
 
     @pidfile.create
     @logger.info "Became daemon with process id: #{$$}"
@@ -165,7 +166,7 @@ def start
     	:user             => @config[:user],
     	:group            => @config[:group],
     	:operation_class	=> ActiveRecordOperation,
-    	:operation_args		=> [@config, @logger]
+    	:operation_args		=> [@config, klass, @logger]
     )
     s.run_tcpserver
     s.join
