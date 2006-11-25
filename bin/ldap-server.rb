@@ -12,9 +12,10 @@ if (ARGV.size != 1) || !(%w{start stop restart}.include? ARGV[0])
   exit 3
 end
 
+server = Server.new
 
 case ARGV[0]
-  when "start":   start
-  when "stop":    stop
-  when "restart": restart
+  when "start":   server.start
+  when "stop":    server.stop
+  when "restart": server.restart
 end
