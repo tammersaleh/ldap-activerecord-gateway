@@ -1,5 +1,3 @@
-
-
 class Server
   def initialize(opts = {})
     load_libraries
