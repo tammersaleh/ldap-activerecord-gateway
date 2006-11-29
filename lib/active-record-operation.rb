@@ -14,8 +14,8 @@ class ActiveRecordOperation < LDAP::Server::Operation
     # even though the client didn't explicitly ask for them
     @attributes << "*"
     if basedn != @config[:basedn]
-      @logger.info "Denying request with missmatched basedn (requested #{@config[:basedn]})"
-      raise LDAP::ResultError::UnwillingToPerform, "Bad base DN" unless basedn == @config[:basedn]
+      @logger.info "Denying request with missmatched basedn (wanted \"#{@config[:basedn]}\", but got \"#{basedn}\")"
+      raise LDAP::ResultError::UnwillingToPerform, "Bad base DN"
     end
 
     if scope == LDAP::Server::BaseObject
