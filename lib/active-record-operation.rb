@@ -69,7 +69,7 @@ class ActiveRecordOperation < LDAP::Server::Operation
 
     query = filter[2]
 
-    if query.length != 6
+    if !(query.length > 3)
       @logger.info "Denying complex query (error 2): #{filter.inspect}"
       raise LDAP::ResultError::UnwillingToPerform, "This query is way too complex: #{filter.inspect}"      
     end
@@ -79,7 +79,7 @@ class ActiveRecordOperation < LDAP::Server::Operation
       raise LDAP::ResultError::UnwillingToPerform, "This query is way too complex: #{filter.inspect}"      
     end
     
-    query_string = query[2..5].compact.first # We're just going to take the first non-nil element as the search string
+    query_string = query[2..-1].compact.first # We're just going to take the first non-nil element as the search string
     
     if !query_string
       @logger.info "Refusing to respond to blank query string: #{filter.inspect}."
