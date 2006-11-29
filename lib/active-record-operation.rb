@@ -8,8 +8,9 @@ class ActiveRecordOperation < LDAP::Server::Operation
   end
   
   def search(basedn, scope, deref, filter)
-    @logger.info "Received search request."
+    @logger.info  "Received search request."
     @logger.debug "Filter: #{filter.inspect}"
+
     # This is needed to force the ruby ldap server to return our parameters, 
     # even though the client didn't explicitly ask for them
     @attributes << "*"
@@ -34,7 +35,7 @@ class ActiveRecordOperation < LDAP::Server::Operation
     # (with the order of the subgroups maybe turned around)
     
     unless (filter[0] == :or) and (filter[1..4].transpose[0] == ([:substrings] * 4))
-      @logger.info "Denying complex query (error 1)"
+      @logger.info "Denying complex query (error 1): #{filter.inspect}"
       raise LDAP::ResultError::UnwillingToPerform, "This query is way too complex: #{filter.inspect}"
     end
     
@@ -53,28 +54,32 @@ class ActiveRecordOperation < LDAP::Server::Operation
     end
 
     if (filter[1..4].transpose[query_index] != ([query_string] * 4)) 
-      @logger.info "Denying complex query (error 2)"
+      @logger.info "Denying complex query (error 2): #{filter.inspect}"
       raise LDAP::ResultError::UnwillingToPerform, "Seriously, I can only handle simple queries: #{filter.inspect}"
     end
 
     @logger.debug "Running #{@ar_class.name}.search(\"#{query_string}\")"
+    
     begin
       @records = @ar_class.search(query_string)
     rescue
       @logger.error "ERROR running #{@ar_class.name}.search(#{query_string}): #{$!}"
       raise LDAP::ResultError::OperationsError, "Error encountered during processing."
     end 
-      @logger.info "Returning #{@records.size} records matching \"#{query_string}\"."
-      @records.each do |record|
+
+    @logger.info "Returning #{@records.size} records matching \"#{query_string}\"."
+    
+    @records.each do |record|      
       begin
         ret = record.to_ldap_entry
       rescue
         @logger.error "ERROR converting AR instance to ldap entry: #{$!}"
         raise LDAP::ResultError::OperationsError, "Error encountered during processing."
-      end      
+      end
+          
       ret_basedn = "uid=#{ret["uid"]},#{@config[:basedn]}"
       @logger.debug "Sending #{ret_basedn} - #{ret.inspect}" 
       send_SearchResultEntry(ret_basedn, ret)
-      end
+    end
   end
 end
