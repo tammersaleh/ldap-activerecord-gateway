@@ -27,37 +27,8 @@ class ActiveRecordOperation < LDAP::Server::Operation
         raise LDAP::ResultError::UnwillingToPerform, "OneLevel not implemented"
     end
 
-    # format of mozilla and OS X address book searches are always this: 
-    # [:or, [:substrings, "mail",      nil, nil, "XXX", nil], 
-    #       [:substrings, "cn",        nil, nil, "XXX", nil], 
-    #       [:substrings, "givenName", nil, nil, "XXX", nil], 
-    #       [:substrings, "sn",        nil, nil, "XXX", nil]]
-    # (with the order of the subgroups maybe turned around)
+    query_string = parse_filter(filter)
     
-    unless (filter[0] == :or) and (filter[1..4].transpose[0] == ([:substrings] * 4))
-      @logger.info "Denying complex query (error 1): #{filter.inspect}"
-      raise LDAP::ResultError::UnwillingToPerform, "This query is way too complex: #{filter.inspect}"
-    end
-    
-    # Different address books put the string in different places.  How fun.
-    if    (query_string = filter[1][5])
-      query_index = 5
-    elsif (query_string = filter[1][4])
-      query_index = 4
-    elsif (query_string = filter[1][3])
-      query_index = 3
-    end
-    
-    if !query_string
-      @logger.info "Refusing to respond to blank query string."
-      raise LDAP::ResultError::UnwillingToPerform, "Refusing to respond to blank query string: #{filter.inspect}"
-    end
-
-    if (filter[1..4].transpose[query_index] != ([query_string] * 4)) 
-      @logger.info "Denying complex query (error 2): #{filter.inspect}"
-      raise LDAP::ResultError::UnwillingToPerform, "Seriously, I can only handle simple queries: #{filter.inspect}"
-    end
-
     @logger.debug "Running #{@ar_class.name}.search(\"#{query_string}\")"
     
     begin
@@ -81,5 +52,40 @@ class ActiveRecordOperation < LDAP::Server::Operation
       @logger.debug "Sending #{ret_basedn} - #{ret.inspect}" 
       send_SearchResultEntry(ret_basedn, ret)
     end
+  end
+  
+  def parse_filter(filter)
+    # format of mozilla and OS X address book searches are always this: 
+    # [:or, [:substrings, "mail",      nil, nil, "XXX", nil], 
+    #       [:substrings, "cn",        nil, nil, "XXX", nil], 
+    #       [:substrings, "givenName", nil, nil, "XXX", nil], 
+    #       [:substrings, "sn",        nil, nil, "XXX", nil]]
+    # (with the order of the subgroups maybe turned around)
+
+    if filter[0] != :or
+      @logger.info "Denying complex query (error 1): #{filter.inspect}"
+      raise LDAP::ResultError::UnwillingToPerform, "This query is way too complex: #{filter.inspect}"
+    end
+
+    query = filter[2]
+
+    if query.length != 6
+      @logger.info "Denying complex query (error 2): #{filter.inspect}"
+      raise LDAP::ResultError::UnwillingToPerform, "This query is way too complex: #{filter.inspect}"      
+    end
+    
+    if !(%w{mail cn givenName sn}.include? query[1])
+      @logger.info "Denying complex query (error 3): #{filter.inspect}"
+      raise LDAP::ResultError::UnwillingToPerform, "This query is way too complex: #{filter.inspect}"      
+    end
+    
+    query_string = query[2..5].compact.first # We're just going to take the first non-nil element as the search string
+    
+    if !query_string
+      @logger.info "Refusing to respond to blank query string: #{filter.inspect}."
+      raise LDAP::ResultError::UnwillingToPerform, "Refusing to respond to blank query string: #{filter.inspect}"
+    end
+    
+    query_string
   end
 end
