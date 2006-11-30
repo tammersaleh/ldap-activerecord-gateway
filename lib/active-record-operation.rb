@@ -20,11 +20,11 @@ class ActiveRecordOperation < LDAP::Server::Operation
     end
 
     if scope == LDAP::Server::BaseObject
-        @logger.info "Denying request for BaseObject"
-        raise LDAP::ResultError::UnwillingToPerform, "BaseObject not implemented"
-    elsif scope == LDAP::Server::SingleLevel
-        @logger.info "Denying request for SingleLevel"
-        raise LDAP::ResultError::UnwillingToPerform, "OneLevel not implemented"
+        @logger.info "Denying request for BaseObject: #{filter.inspect}"
+        raise LDAP::ResultError::UnwillingToPerform, "BaseObject not implemented: #{filter}"
+    # elsif scope == LDAP::Server::SingleLevel
+    #     @logger.info "Denying request for SingleLevel: #{filter.inspect}"
+    #     raise LDAP::ResultError::UnwillingToPerform, "OneLevel not implemented: #{filter}"
     end
 
     query_string = parse_filter(filter)
