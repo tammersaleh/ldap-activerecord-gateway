@@ -1,0 +1,381 @@
+# Logfile created on Tue May 08 16:22:52 -0400 2007 by logger.rb/1.5.2.9
+I, [16:22:52#3071]  INFO -- : 
+I, [16:23:14#3078]  INFO -- : 
+I, [16:23:19#3084]  INFO -- : 
+I, [16:23:22#3090]  INFO -- : 
+I, [16:23:33#3097]  INFO -- : 
+Initialized Server
+Starting LDAP server on port 1389.
+I, [16:25:55#3135]  INFO -- : 
+I, [16:26:14#3143]  INFO -- : 
+I, [16:47:47#3201]  INFO -- : 
+Starting LDAP server on port 1389.
+I, [16:48:42#3207]  INFO -- : 
+I, [19:58:25#3515]  INFO -- : 
+Starting LDAP server on port 1389.
+I, [19:58:31#3519]  INFO -- : 
+I, [20:00:40#3524]  INFO -- : 
+Starting LDAP server on port 1389.
+I, [20:04:59#3536]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+I, [20:10:36#3581]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+I, [20:10:46#3584]  INFO -- : 
+I, [20:10:50#3585]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+I, [20:11:17#3589]  INFO -- : 
+I, [20:11:21#3590]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+I, [20:12:15#3596]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+I, [20:12:21#3599]  INFO -- : 
+I, [20:12:22#3600]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+I, [20:12:37#3604]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+I, [20:12:46#3607]  INFO -- : 
+I, [20:12:58#3609]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+I, [20:30:45#3630]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+
+Became daemon with process id: 3632
+Access to 10 Person records
+I, [20:30:50#3633]  INFO -- : 
+Killing server at 3632
+Received TERM signal.  Exiting.
+I, [20:30:52#3635]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+
+Became daemon with process id: 3637
+Access to 10 Person records
+I, [20:31:36#3639]  INFO -- : 
+Killing server at 3637
+Received TERM signal.  Exiting.
+I, [20:31:39#3641]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+
+Became daemon with process id: 3643
+Access to 10 Person records
+I, [20:35:15#3651]  INFO -- : 
+Killing server at 3643
+Received TERM signal.  Exiting.
+I, [20:35:19#3653]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+I, [20:37:02#3682]  INFO -- : 
+I, [20:37:06#3684]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+I, [20:37:32#3689]  INFO -- : 
+I, [20:37:35#3691]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+I, [20:43:10#3706]  INFO -- : 
+I, [20:43:13#3708]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Reinitialized the logger
+Became daemon with process id: 3710
+Access to 10 Person records
+I, [20:43:17#3711]  INFO -- : 
+Killing server at 3710
+Received TERM signal.  Exiting.
+I, [20:43:20#3713]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Reinitialized the logger
+Became daemon with process id: 3715
+Access to 10 Person records
+I, [20:43:28#3718]  INFO -- : 
+Killing server at 3715
+Received TERM signal.  Exiting.
+I, [20:43:31#3720]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Reinitialized the logger
+Became daemon with process id: 3722
+Access to 10 Person records
+I, [20:43:55#3725]  INFO -- : 
+Killing server at 3722
+Received TERM signal.  Exiting.
+I, [20:43:58#3727]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Reinitialized the logger
+Became daemon with process id: 3729
+Access to 10 Person records
+I, [20:44:01#3730]  INFO -- : 
+Killing server at 3729
+Received TERM signal.  Exiting.
+I, [20:44:04#3732]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Reinitialized the logger
+Became daemon with process id: 3734
+Access to 10 Person records
+I, [20:44:10#3736]  INFO -- : 
+Killing server at 3734
+Received TERM signal.  Exiting.
+I, [20:44:13#3738]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Reinitialized the logger
+Became daemon with process id: 3740
+Access to 10 Person records
+I, [20:44:14#3741]  INFO -- : 
+Killing server at 3740
+Received TERM signal.  Exiting.
+I, [20:44:18#3743]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Reinitialized the logger
+Became daemon with process id: 3745
+Access to 10 Person records
+I, [20:47:59#3754]  INFO -- : 
+Killing server at 3745
+Received TERM signal.  Exiting.
+I, [20:48:03#3756]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+I, [20:49:06#3761]  INFO -- : 
+I, [20:49:10#3763]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+I, [20:49:59#3768]  INFO -- : 
+I, [20:50:02#3770]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Reinitialized the logger
+Became daemon with process id: 3772
+Access to 10 Person records
+I, [20:50:12#3773]  INFO -- : 
+Killing server at 3772
+Received TERM signal.  Exiting.
+I, [20:50:16#3775]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Reinitialized the logger
+Became daemon with process id: 3777
+Access to 10 Person records
+I, [20:50:48#3780]  INFO -- : 
+Killing server at 3777
+Received TERM signal.  Exiting.
+I, [20:50:51#3782]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Became daemon with process id: 3784
+Access to 10 Person records
+Received connection request (1).
+Received connection request (2).
+Received search request.
+Filter: [:or, [:substrings, "givenname", nil, "xxx", nil], [:substrings, "sn", nil, "xxx", nil], [:substrings, "cn", nil, "xxx", nil], [:substrings, "mail", nil, "xxx", nil]]
+Denying complex query (error 3): [:or, [:substrings, "givenname", nil, "xxx", nil], [:substrings, "sn", nil, "xxx", nil], [:substrings, "cn", nil, "xxx", nil], [:substrings, "mail", nil, "xxx", nil]]
+I, [21:18:05#3864]  INFO -- : 
+Killing server at 3784
+Received TERM signal.  Exiting.
+I, [21:18:09#3866]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Became daemon with process id: 3868
+Access to 10 Person records
+Received connection request (1).
+Received connection request (2).
+Received search request.
+Filter: [:or, [:substrings, "givenname", nil, "blah", nil], [:substrings, "sn", nil, "blah", nil], [:substrings, "cn", nil, "blah", nil], [:substrings, "mail", nil, "blah", nil]]
+Denying complex query (error 3): [:or, [:substrings, "givenname", nil, "blah", nil], [:substrings, "sn", nil, "blah", nil], [:substrings, "cn", nil, "blah", nil], [:substrings, "mail", nil, "blah", nil]]
+I, [09:48:38#4085]  INFO -- : 
+I, [09:48:41#4090]  INFO -- : 
+Killing server at 3868
+Received TERM signal.  Exiting.
+I, [09:48:43#4099]  INFO -- : 
+Starting LDAP server on port 1389.
+Forking
+Becoming session leader
+Forking again
+Setting umask
+changing to /
+Closing all IO objects
+Reopening stdio
+Became daemon with process id: 4105
+Access to 10 Person records
+Received connection request (1).
+Received connection request (2).
+Received search request.
+Filter: [:or, [:substrings, "givenname", nil, "asdf", nil], [:substrings, "sn", nil, "asdf", nil], [:substrings, "cn", nil, "asdf", nil], [:substrings, "mail", nil, "asdf", nil]]
+Running Person.search("asdf")
+Returning 10 records matching "asdf".
+Sending uid=1,dc=example,dc=com - {"cn"=>["FirstName1"], "st"=>["IL"], "l"=>["Chicago"], "givenName"=>["LastName1"], "title"=>["Mr"], "objectclass"=>["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"], "o"=>["Some Company"], "postofficebox"=>["213 Lane St."], "homephone"=>["555-1221"], "mail"=>["user1@somecompany.com"], "sn"=>["LastName1"], "uid"=>["1"], "postalcode"=>["02143"], "mobile"=>["555-1241"], "telephonenumber"=>["555-1211"], "fax"=>["555-1231"]}
+Sending uid=2,dc=example,dc=com - {"cn"=>["FirstName2"], "st"=>["IL"], "l"=>["Chicago"], "givenName"=>["LastName2"], "title"=>["Mr"], "objectclass"=>["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"], "o"=>["Some Company"], "postofficebox"=>["213 Lane St."], "homephone"=>["555-1222"], "mail"=>["user2@somecompany.com"], "sn"=>["LastName2"], "uid"=>["2"], "postalcode"=>["02143"], "mobile"=>["555-1242"], "telephonenumber"=>["555-1212"], "fax"=>["555-1232"]}
+Sending uid=3,dc=example,dc=com - {"cn"=>["FirstName3"], "st"=>["IL"], "l"=>["Chicago"], "givenName"=>["LastName3"], "title"=>["Mr"], "objectclass"=>["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"], "o"=>["Some Company"], "postofficebox"=>["213 Lane St."], "homephone"=>["555-1223"], "mail"=>["user3@somecompany.com"], "sn"=>["LastName3"], "uid"=>["3"], "postalcode"=>["02143"], "mobile"=>["555-1243"], "telephonenumber"=>["555-1213"], "fax"=>["555-1233"]}
+Sending uid=4,dc=example,dc=com - {"cn"=>["FirstName4"], "st"=>["IL"], "l"=>["Chicago"], "givenName"=>["LastName4"], "title"=>["Mr"], "objectclass"=>["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"], "o"=>["Some Company"], "postofficebox"=>["213 Lane St."], "homephone"=>["555-1224"], "mail"=>["user4@somecompany.com"], "sn"=>["LastName4"], "uid"=>["4"], "postalcode"=>["02143"], "mobile"=>["555-1244"], "telephonenumber"=>["555-1214"], "fax"=>["555-1234"]}
+Sending uid=5,dc=example,dc=com - {"cn"=>["FirstName5"], "st"=>["IL"], "l"=>["Chicago"], "givenName"=>["LastName5"], "title"=>["Mr"], "objectclass"=>["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"], "o"=>["Some Company"], "postofficebox"=>["213 Lane St."], "homephone"=>["555-1225"], "mail"=>["user5@somecompany.com"], "sn"=>["LastName5"], "uid"=>["5"], "postalcode"=>["02143"], "mobile"=>["555-1245"], "telephonenumber"=>["555-1215"], "fax"=>["555-1235"]}
+Sending uid=6,dc=example,dc=com - {"cn"=>["FirstName6"], "st"=>["IL"], "l"=>["Chicago"], "givenName"=>["LastName6"], "title"=>["Mr"], "objectclass"=>["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"], "o"=>["Some Company"], "postofficebox"=>["213 Lane St."], "homephone"=>["555-1226"], "mail"=>["user6@somecompany.com"], "sn"=>["LastName6"], "uid"=>["6"], "postalcode"=>["02143"], "mobile"=>["555-1246"], "telephonenumber"=>["555-1216"], "fax"=>["555-1236"]}
+Sending uid=7,dc=example,dc=com - {"cn"=>["FirstName7"], "st"=>["IL"], "l"=>["Chicago"], "givenName"=>["LastName7"], "title"=>["Mr"], "objectclass"=>["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"], "o"=>["Some Company"], "postofficebox"=>["213 Lane St."], "homephone"=>["555-1227"], "mail"=>["user7@somecompany.com"], "sn"=>["LastName7"], "uid"=>["7"], "postalcode"=>["02143"], "mobile"=>["555-1247"], "telephonenumber"=>["555-1217"], "fax"=>["555-1237"]}
+Sending uid=8,dc=example,dc=com - {"cn"=>["FirstName8"], "st"=>["IL"], "l"=>["Chicago"], "givenName"=>["LastName8"], "title"=>["Mr"], "objectclass"=>["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"], "o"=>["Some Company"], "postofficebox"=>["213 Lane St."], "homephone"=>["555-1228"], "mail"=>["user8@somecompany.com"], "sn"=>["LastName8"], "uid"=>["8"], "postalcode"=>["02143"], "mobile"=>["555-1248"], "telephonenumber"=>["555-1218"], "fax"=>["555-1238"]}
+Sending uid=9,dc=example,dc=com - {"cn"=>["FirstName9"], "st"=>["IL"], "l"=>["Chicago"], "givenName"=>["LastName9"], "title"=>["Mr"], "objectclass"=>["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"], "o"=>["Some Company"], "postofficebox"=>["213 Lane St."], "homephone"=>["555-1229"], "mail"=>["user9@somecompany.com"], "sn"=>["LastName9"], "uid"=>["9"], "postalcode"=>["02143"], "mobile"=>["555-1249"], "telephonenumber"=>["555-1219"], "fax"=>["555-1239"]}
+Sending uid=10,dc=example,dc=com - {"cn"=>["FirstName10"], "st"=>["IL"], "l"=>["Chicago"], "givenName"=>["LastName10"], "title"=>["Mr"], "objectclass"=>["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"], "o"=>["Some Company"], "postofficebox"=>["213 Lane St."], "homephone"=>["555-12210"], "mail"=>["user10@somecompany.com"], "sn"=>["LastName10"], "uid"=>["10"], "postalcode"=>["02143"], "mobile"=>["555-12410"], "telephonenumber"=>["555-12110"], "fax"=>["555-12310"]}

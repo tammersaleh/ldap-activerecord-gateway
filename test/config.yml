@@ -1,0 +1,8 @@
+rails_dir: "/home/tsaleh/thoughtbot/ldap-activerecord-gateway/test/railsdir/"
+active_record_model: Person
+basedn: dc=example,dc=com
+port: 1389 # anything below 1000 is reserved, and must run as root.
+tcp_nodelay: true
+preforked_threads: 10
+bind_address: 0.0.0.0
+debug: true

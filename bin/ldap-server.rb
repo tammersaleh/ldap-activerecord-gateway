@@ -1,21 +1,11 @@
 #!/usr/bin/env ruby
+basedir = File.expand_path(File.join(File.dirname(__FILE__), ".."))
 
-MYNAME  = File.basename(__FILE__)
-BASEDIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
-Dir.chdir BASEDIR
-
-$:.unshift "#{BASEDIR}/lib"
-require 'server'
-
-if (ARGV.size != 1) || !(%w{start stop restart}.include? ARGV[0])
-  puts "Usage:\n  #{MYNAME} [start|stop|restart]"
-  exit 3
-end
-
-server = Server.new
+require File.join(basedir, "lib", "server")
 
 case ARGV[0]
-  when "start":   server.start
-  when "stop":    server.stop
-  when "restart": server.restart
+  when "start":   Server.new(ARGV[1]).start
+  when "stop":    Server.new(ARGV[1]).stop
+  when "restart": Server.new(ARGV[1]).restart
+  else puts "Usage: #{File.basename(__FILE__)} {start|stop|restart} [config file]"
 end

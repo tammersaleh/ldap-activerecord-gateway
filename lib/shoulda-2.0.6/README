@@ -1,0 +1,17 @@
+= ThoughtBot Test Helpers
+
+A collection of Test::Unit helper methods.
+
+Adds helpers for 
+
+* context and should statements
+* Common ActiveRecord model tests
+* A few general purpose assertions
+  
+== Todo
+
+* Many more tests (of the tests).  Specifically, the ActiveRecord macros need to be tested.
+* Controller test helpers
+* General code cleanups
+* More options for AR helpers
+  
