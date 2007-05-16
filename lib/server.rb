@@ -70,10 +70,14 @@ class Server
       exit
     end
 
-    # This is to ensure thread-safety
-    logger.debug "Setting allow_concurrency"
-    ActiveRecord::Base.allow_concurrency = true 
-    logger.debug "done"
+    begin
+      # This is to ensure thread-safety
+      logger.debug "Setting allow_concurrency"
+      ActiveRecord::Base.allow_concurrency = true 
+    rescue Exception => e
+      logger.info "Exception caught: #{e}"
+      exit
+    end
 
     klass = nil
     begin
