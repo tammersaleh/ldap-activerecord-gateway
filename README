@@ -13,6 +13,39 @@ AR model, restart it with "./bin/ldap-server.rb restart".
 
 To test, point your addressbook (ie: Thunderbird or OS X Address Book) at the server and run a search.
 
-TODO: Provide example AR implementation.
+Example AR class:
+
+class Person < ActiveRecord::Base
+  def fullname
+    "#{firstname} #{lastname}"
+  end
+  
+  def to_ldap_entry
+		{	
+		  "objectclass"     => ["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"],
+			"uid"             => ["tbotter-#{id}"],
+ 			"sn"              => [lastname],
+  		"givenName"       => [firstname],
+			"cn"              => [fullname],
+  		"title"           => [title],
+  		"o"               => [company], 
+  		"mail"            => [email],
+  		"telephonenumber" => [work_phone], 
+  		"homephone"       => [home_phone],
+  		"fax"             => [fax],
+  		"mobile"          => [mobile],
+  		"street"          => [address],
+  		"l"               => [city],
+  		"st"              => [state], 
+  		"postalcode"      => [zip], 
+		}
+	end
+
+  def self.search(query)
+    Person.find(:all, 
+                :conditions => ["(email LIKE ?) OR (firstname LIKE ?) OR (lastname LIKE ?)", 
+                                "#{query}%", "#{query}%", "#{query}%"])
+  end
+end
 
 Have fun.
