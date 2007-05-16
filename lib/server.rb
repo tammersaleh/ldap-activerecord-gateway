@@ -73,8 +73,15 @@ class Server
     # This is to ensure thread-safety
     ActiveRecord::Base.allow_concurrency = true 
 
-    klass = @config[:active_record_model].constantize
-    @logger.info "Access to #{klass.count} #{@config[:active_record_model]} records"
+    klass = nil
+    begin
+      klass = @config[:active_record_model].constantize
+      @logger.info "Access to #{klass.count} #{@config[:active_record_model]} records"
+    rescue Exception => e
+      @logger.info "Exception caught while loading #{@config[:active_record_model]}:"
+      @logger.info "  #{e}"
+      exit
+    end
 
     s = LDAP::Server.new(
     	:port			        => @config[:port],
