@@ -47,14 +47,14 @@ class Server
   end
   
   def start
+    pidfile.ensure_empty! "ERROR: It looks like I'm already running.  Not starting."
+    
+    logger.info "Starting LDAP server"
+    daemonize(logger)
+
     require File.join(@config['rails_dir'], 'config', 'environment.rb')
     self.logger.info("Cannot load Rails.  Exiting.") and exit 5 unless defined? RAILS_ROOT
     @config.symbolize_keys!
-
-    pidfile.ensure_empty! "ERROR: It looks like I'm already running.  Not starting."
-    
-    logger.info "Starting LDAP server on port #{@config[:port]}."
-    daemonize(logger)    
     
     logger.info "Became daemon with process id: #{$$}"
     begin
@@ -100,6 +100,8 @@ class Server
     	:operation_args		=> [@config, klass, logger]
     )
     s.run_tcpserver
+    logger.info "Listening on port #{@config[:port]}."
+    
     s.join
   end
 
