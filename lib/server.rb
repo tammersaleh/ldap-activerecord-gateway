@@ -27,13 +27,13 @@ class Server
     
     @config = YAML.load(ERB.new(File.read(config_file_name)).result)
 
-    @logger = Logger.new(@config["log_file"] || File.join(@config["rails_dir"], *%w(log ldap-server.log)))
-    @logger.level = @config["debug"] ? Logger::DEBUG : Logger::INFO 
-    @logger.datetime_format = "%H:%M:%S"    
-    @logger.info ""
+    self.logger = Logger.new(@config["log_file"] || File.join(@config["rails_dir"], *%w(log ldap-server.log)))
+    self.logger.level = @config["debug"] ? Logger::DEBUG : Logger::INFO 
+    self.logger.datetime_format = "%H:%M:%S"    
+    self.logger.info ""
 
     require File.join(@config['rails_dir'], 'config', 'environment.rb')
-    @logger.info("Cannot load Rails.  Exiting.") and exit 5 unless defined? RAILS_ROOT
+    self.logger.info("Cannot load Rails.  Exiting.") and exit 5 unless defined? RAILS_ROOT
     @config.symbolize_keys!
 
     @pidfile = PidFile.new(@config[:pid_file] || File.join(@config[:rails_dir], *%w(log ldap-server.pid)))
@@ -56,30 +56,31 @@ class Server
     logger.info "Starting LDAP server on port #{@config[:port]}."
     daemonize(logger)    
     
-    # logger = Logger.new(@config[:log_file] || File.join(@config[:rails_dir], *%w(log ldap-server.log)))
-    # logger.level = @config[:debug] ? Logger::DEBUG : Logger::INFO 
-    # logger.datetime_format = "%H:%M:%S"    
-    # logger.info "Reinitialized the logger"
-    
     logger.info "Became daemon with process id: #{$$}"
-    pidfile.create
+    begin
+      pidfile.create
+    rescue Exception => e
+      logger.info "Exception caught while creating pidfile: #{e}"
+      exit
+    end
 
     trap("TERM") do 
-      logger && logger.info("Received TERM signal.  Exiting.")
-      pidfile && pidfile.remove
+      logger.info("Received TERM signal.  Exiting.") if logger
+      pidfile.remove if pidfile
       exit
     end
 
     # This is to ensure thread-safety
+    logger.debug "Setting allow_concurrency"
     ActiveRecord::Base.allow_concurrency = true 
+    logger.debug "done"
 
     klass = nil
     begin
       klass = @config[:active_record_model].constantize
-      @logger.info "Access to #{klass.count} #{@config[:active_record_model]} records"
+      logger.info "Access to #{klass.count} #{@config[:active_record_model]} records"
     rescue Exception => e
-      @logger.info "Exception caught while loading #{@config[:active_record_model]}:"
-      @logger.info "  #{e}"
+      logger.info "Exception caught while loading #{@config[:active_record_model]}: #{e}"
       exit
     end
 
@@ -92,7 +93,7 @@ class Server
     	:user             => @config[:user],
     	:group            => @config[:group],
     	:operation_class	=> ActiveRecordOperation,
-    	:operation_args		=> [@config, klass, @logger]
+    	:operation_args		=> [@config, klass, logger]
     )
     s.run_tcpserver
     s.join
@@ -101,7 +102,7 @@ class Server
   def stop
     if @pidfile.pid
       puts "Sending TERM signal to process #{@pidfile.pid}" if @config[:debug]
-      @logger.info("Killing server at #{@pidfile.pid}")
+      logger.info("Killing server at #{@pidfile.pid}")
       Process.kill("TERM", @pidfile.pid.to_i)
     else
       puts "Can't find pid.  Are you sure I'm running?"
