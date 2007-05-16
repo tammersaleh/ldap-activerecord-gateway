@@ -25,14 +25,6 @@ class ServerTest < Test::Unit::TestCase
   context "Server" do
     setup { stub_everything }
     
-    should "load environment.rb on new" do
-      Server.any_instance.
-             expects(:require).
-             with("#{File.dirname(__FILE__)}/railsdir/config/environment.rb").
-             returns(require("#{File.dirname(__FILE__)}/railsdir/config/environment.rb"))
-      server = Server.new("/tmp/stuff.yml")
-    end
-    
     should "read the config file on new" do
       File.expects(:read).with("/tmp/stuff.yml").returns(CONFIG_FILE)      
       server = Server.new("/tmp/stuff.yml")
@@ -55,6 +47,13 @@ class ServerTest < Test::Unit::TestCase
     setup do 
       stub_everything 
       @server = Server.new("/tmp/stuff.yml")
+    end
+    
+    should "load environment.rb on start" do
+      @server.expects(:require).
+              with("#{File.dirname(__FILE__)}/railsdir/config/environment.rb").
+              returns(require("#{File.dirname(__FILE__)}/railsdir/config/environment.rb"))
+      @server.start
     end
     
     should "call pidfile.ensure_empty! on start" do

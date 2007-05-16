@@ -32,11 +32,7 @@ class Server
     self.logger.datetime_format = "%H:%M:%S"    
     self.logger.info ""
 
-    require File.join(@config['rails_dir'], 'config', 'environment.rb')
-    self.logger.info("Cannot load Rails.  Exiting.") and exit 5 unless defined? RAILS_ROOT
-    @config.symbolize_keys!
-
-    @pidfile = PidFile.new(@config[:pid_file] || File.join(@config[:rails_dir], *%w(log ldap-server.pid)))
+    @pidfile = PidFile.new(@config["pid_file"] || File.join(@config["rails_dir"], *%w(log ldap-server.pid)))
   end
   
   def become_user(username = 'nobody', chroot = false)
@@ -51,6 +47,10 @@ class Server
   end
   
   def start
+    require File.join(@config['rails_dir'], 'config', 'environment.rb')
+    self.logger.info("Cannot load Rails.  Exiting.") and exit 5 unless defined? RAILS_ROOT
+    @config.symbolize_keys!
+
     pidfile.ensure_empty! "ERROR: It looks like I'm already running.  Not starting."
     
     logger.info "Starting LDAP server on port #{@config[:port]}."
