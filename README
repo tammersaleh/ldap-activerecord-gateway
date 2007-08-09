@@ -7,7 +7,7 @@ The server is read-only, and can serve information from any AR model that implem
 
 To use, configure the server by creating a conf/ldap-server.yml file (see ldap-server.example.yml).
 The important bits are rails_dir, active_record_model, basedn, and port.  Once that's done,
-run "./bin/ldap-server.rb start", wait for it to daemonize, and check the log file under log/ for
+run "./bin/ldap-server.rb start", wait for it to daemonize, and check the log file under $RAILS_ROOT/log/ for
 errors.  To stop, run "./bin/ldap-server.rb", and if you reconfigure the server or change the underlying
 AR model, restart it with "./bin/ldap-server.rb restart".
 
