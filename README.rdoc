@@ -1,0 +1,59 @@
+= DEPRECATED
+
+This plugin is no longer maintained. It was last tested against Rails from
+2007.
+
+= ldap-activerecord-gateway
+
+This is an implementation of an LDAP server which uses active record as the
+data source.  The server is read-only, and can serve information from any AR
+model that implements the #search(string) class method and the #to_ldap_entry
+instance method.
+
+To use, configure the server by creating a conf/ldap-server.yml file (see
+ldap-server.example.yml).  The important bits are rails_dir,
+active_record_model, basedn, and port.  Once that's done, run
+"./bin/ldap-server.rb start", wait for it to daemonize, and check the log file
+under $RAILS_ROOT/log/ for errors.  To stop, run "./bin/ldap-server.rb", and if
+you reconfigure the server or change the underlying AR model, restart it with
+"./bin/ldap-server.rb restart".
+
+To test, point your addressbook (ie: Thunderbird or OS X Address Book) at the
+server and run a search.
+
+Example AR class:
+
+  class Person < ActiveRecord::Base
+    def fullname
+      "#{firstname} #{lastname}"
+    end
+    
+    def to_ldap_entry
+  		{	
+  		  "objectclass"     => ["top", "person", "organizationalPerson", "inetOrgPerson", "mozillaOrgPerson"],
+  			"uid"             => ["tbotter-#{id}"],
+   			"sn"              => [lastname],
+    		"givenName"       => [firstname],
+  			"cn"              => [fullname],
+    		"title"           => [title],
+    		"o"               => [company], 
+    		"mail"            => [email],
+    		"telephonenumber" => [work_phone], 
+    		"homephone"       => [home_phone],
+    		"fax"             => [fax],
+    		"mobile"          => [mobile],
+    		"street"          => [address],
+    		"l"               => [city],
+    		"st"              => [state], 
+    		"postalcode"      => [zip], 
+  		}
+  	end
+  
+    def self.search(query)
+      Person.find(:all, 
+                  :conditions => ["(email LIKE ?) OR (firstname LIKE ?) OR (lastname LIKE ?)", 
+                                  "#{query}%", "#{query}%", "#{query}%"])
+    end
+  end
+
+Have fun.
